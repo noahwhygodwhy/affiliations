@@ -35,13 +35,6 @@ jobs:
         with:
           path: ./dist/affiliations/browser
 
-      - name: Inspect build
-        run: |
-          echo "=== dist ==="
-          find dist -maxdepth 4 -type f
-          echo "=== index.html ==="
-          cat dist/affiliations/browser/index.html
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
