@@ -1,0 +1,17 @@
+<table ngGrid [enableSelection]="true" [selectionMode]="'explicit'" [multi]="true" [focusMode]="'roving'">
+
+@for(rowIndex of [0, 1, 2, 3]; track rowIndex) {
+    <tr ngGridRow>
+        @for(colIndex of [0, 1, 2, 3]; track colIndex) {
+            <td ngGridCell>
+                @let dataEntry = dataEntries[colIndex + (rowIndex*4)];
+                <mat-card apperance="outlined">
+                    <mat-card-header align="center">
+                        <mat-card-title>{{dataEntry.title}}</mat-card-title>
+                    </mat-card-header>
+                </mat-card>
+            </td>
+        }
+    </tr>
+}
+</table>
