@@ -28,7 +28,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build -- --base-href /affiliations/
+        run: npm run build -- --base-href /
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
