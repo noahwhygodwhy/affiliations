@@ -1,24 +1,18 @@
+<div class="d-flex justify-content-center">
 
-<style>
+<table ngGrid #grid="ngGrid" [enableSelection]="true" [selectionMode]="'explicit'" [multi]="true" [focusMode]="'roving'">
 
-</style>
-
-<div class="d-flex p-2">
-
-  <table ngGrid #grid="ngGrid" [enableSelection]="true" [selectionMode]="'explicit'" [multi]="true" [focusMode]="'roving'">
-
-  @for(rowIndex of [0, 1, 2, 3]; track rowIndex) {
-      <tr ngGridRow>
-          @for(colIndex of [0, 1, 2, 3]; track colIndex) {
-              <td ngGridCell>
-                  @let dataEntry = dataEntries[colIndex + (rowIndex*4)];
+@for(rowIndex of [0, 1, 2, 3]; track rowIndex) {
+    <tr ngGridRow>
+        @for(colIndex of [0, 1, 2, 3]; track colIndex) {
+            <td ngGridCell>
+                @let dataEntry = dataEntries[colIndex + (rowIndex*4)];
                 <button ngGridCellWidget type="button" class="btn btn-outline-secondary" btn-lg>{{dataEntry.title}}</button>
-              </td>
-          }
-      </tr>
-  }
-  </table>
+            </td>
+        }
+    </tr>
+}
+</table>
 </div>
-
 
 <router-outlet />
