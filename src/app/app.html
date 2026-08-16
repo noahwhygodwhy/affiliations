@@ -1,4 +1,4 @@
-<div class="d-flex justify-content-center">
+<!-- <div class="d-flex justify-content-center">
 
 <table ngGrid #grid="ngGrid" [enableSelection]="true" [selectionMode]="'explicit'" [multi]="true" [focusMode]="'roving'">
 
@@ -7,12 +7,66 @@
         @for(colIndex of [0, 1, 2, 3]; track colIndex) {
             <td ngGridCell>
                 @let dataEntry = dataEntries[colIndex + (rowIndex*4)];
-                <button ngGridCellWidget type="button" class="btn btn-outline-secondary" btn-lg>{{dataEntry.title}}</button>
+                <button ngGridCellWidget type="button" class="entryButton">{{dataEntry.title}}</button>
             </td>
         }
     </tr>
 }
 </table>
+</div> -->
+
+
+<style>
+</style>
+
+
+
+<div class="container flex-column d-flex h-100">
+    <div class="row flex-grow-1">
+        <h1 class="title">AFILLIATIONS</h1>
+    </div>
+    <div class="row mx-auto">
+        <div class="container flex-column d-flex v-100">
+        @for(rowIndex of [0, 1, 2, 3]; track rowIndex)
+        {
+            <div class="flex-row d-flex">
+                @for(colIndex of [0, 1, 2, 3]; track colIndex)
+                {
+                    <div class="flex-fill p-1">
+                        @let dataEntry = dataEntries[colIndex + (rowIndex*4)];
+                        <button type="button" class="btn btn-outline-secondary entryButton">{{dataEntry.title}}</button>
+                    </div>
+                }
+            </div>
+        }
+        </div>
+    </div>
+    <div class="row flex-grow-2">
+        <h1 class="title">bottom section</h1>
+    </div>
+    <div class="row flex-grow-2">
+        <h1 class="title">bottom section</h1>
+    </div>
 </div>
 
+<!-- <div class="container">
+    <div class="row">
+
+    </div>
+    <div class="row">
+        <table>
+
+        @for(rowIndex of [0, 1, 2, 3]; track rowIndex) {
+            <tr>
+                @for(colIndex of [0, 1, 2, 3]; track colIndex) {
+                    <td>
+                        @let dataEntry = dataEntries[colIndex + (rowIndex*4)];
+                        <button type="button" class="entryButton">{{dataEntry.title}}</button>
+                    </td>
+                }
+            </tr>
+        }
+        </table>
+    </div>
+</div> -->
 <router-outlet />
