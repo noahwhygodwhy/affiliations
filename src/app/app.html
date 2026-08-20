@@ -21,31 +21,51 @@
 
 
 
-<div class="container flex-column d-flex h-100">
+
+<div id="appMainDiv" class="flex-column d-flex h-100" style="padding:0px">
     <div class="row flex-grow-1">
         <h1 class="title">AFILLIATIONS</h1>
     </div>
-    <div class="row mx-auto">
-        <div class="container flex-column d-flex v-100">
+    <div class="row">
+        <div class="container " id="x44gridContainer" >
         @for(rowIndex of [0, 1, 2, 3]; track rowIndex)
         {
-            <div class="flex-row d-flex">
+            <div class="row m-0">
                 @for(colIndex of [0, 1, 2, 3]; track colIndex)
                 {
-                    <div class="flex-fill p-1">
-                        @let dataEntry = dataEntries[colIndex + (rowIndex*4)];
-                        <button type="button" class="btn btn-outline-secondary entryButton">{{dataEntry.title}}</button>
+                    <div class="col p-0 pr-0">
+                        @let dataIndex = colIndex + (rowIndex*4);
+                        @let dataEntry = dataEntries[dataIndex];
+                        <button
+                            (click)="trySelect(dataIndex)"
+                            [ngClass]="getx44ButtonClass(dataIndex)"
+                            type="button"
+                            class="btn
+                            btn-outline-secondary
+                            entryButton">
+                                {{dataEntry.title}}
+                            </button>
                     </div>
                 }
             </div>
         }
         </div>
     </div>
-    <div class="row flex-grow-2">
-        <h1 class="title">bottom section</h1>
+    <div class="row flex-grow-1">
+        <h2 class="mistakediv">
+        Mistakes remaining: <span *repeat="mistakesRemaining">X </span>
+        @for(ind of [...[].constructor(mistakesRemaining).keys()]; track ind)
+        {
+            X
+        }
+        </h2>
     </div>
-    <div class="row flex-grow-2">
-        <h1 class="title">bottom section</h1>
+    <div class="row flex-grow-1">
+        <div class="btn-group bottombuttons">
+        <button (click)="shuffleEntries()" type="button" class="btn btn-secondary">Shuffle</button>
+        <button (click)="deselectAll()" type="button" class="btn btn-secondary">Deselect</button>
+        <button type="button" class="btn btn-secondary">Submit</button>
+        </div>
     </div>
 </div>
 
