@@ -1,7 +1,12 @@
 {
-  "name": "affiliations",
-  "compatibility_date": "2026-08-21",
-  "assets": {
-    "directory": "./dist/affiliations/browser"
-  }
+    "name": "affiliations",
+    "compatibility_date": "2026-08-21",
+    "assets": {
+        "directory": "./dist/affiliations/browser"
+    },
+
+    "triggers":
+    {
+        "crons": ["0 0 5 31 2 ?"]
+    }
 }
