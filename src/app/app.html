@@ -23,8 +23,9 @@
 
 
 <div id="appMainDiv" class="flex-column d-flex h-100" style="padding:0px">
-    <div class="row flex-grow-1">
+    <div class="row">
         <h1 class="title">AFILLIATIONS</h1>
+        <h3 class="subtitle">Group Doujins By Tag</h3>
     </div>
     <div class="row">
         <div class="container " id="x44gridContainer" >
@@ -33,9 +34,9 @@
             <div class="row m-0">
                 @for(colIndex of [0, 1, 2, 3]; track colIndex)
                 {
-                    <div class="col p-0 pr-0">
-                        @let dataIndex = colIndex + (rowIndex*4);
-                        @let dataEntry = dataEntries[dataIndex];
+                    @let dataIndex = colIndex + (rowIndex*4);
+                    @let dataEntry = dataEntries[dataIndex];
+                    <div class="col p-0 pr-0" id="square{{dataIndex}}">
                         <button
                             (click)="trySelect(dataIndex)"
                             [ngClass]="getx44ButtonClass(dataIndex)"
@@ -53,7 +54,7 @@
     </div>
     <div class="row flex-grow-1">
         <h2 class="mistakediv">
-        Mistakes remaining: <span *repeat="mistakesRemaining">X </span>
+        Mistakes remaining:
         @for(ind of [...[].constructor(mistakesRemaining).keys()]; track ind)
         {
             X
@@ -64,7 +65,7 @@
         <div class="btn-group bottombuttons">
         <button (click)="shuffleEntries()" type="button" class="btn btn-secondary">Shuffle</button>
         <button (click)="deselectAll()" type="button" class="btn btn-secondary">Deselect</button>
-        <button type="button" class="btn btn-secondary">Submit</button>
+        <button (click)="trySubmit()" [disabled]="!has4ButtonsSelected" type="button" class="btn btn-secondary">Submit</button>
         </div>
     </div>
 </div>

@@ -12,7 +12,7 @@
     color: black;
     text-wrap:wrap;
     font-size: large;
-
+    transition: transform 1s ease;
 }
 
 
@@ -29,15 +29,51 @@
 }
 
 
+.matchedx44ButtonGroup1
+{
+    background-color: rgb(255, 0, 255);
+    color:black;
+}
+.matchedx44ButtonGroup2
+{
+    background-color: rgb(0, 255, 0);
+    color:black;
+}
+.matchedx44ButtonGroup3
+{
+    background-color: rgb(255, 255, 0);
+    color:black;
+}
+.matchedx44ButtonGroup4
+{
+    background-color: rgb(0, 255, 255);
+    color:black;
+}
+
+
 .title
 {
     font-family: Noto Sans,sans-serif;
     text-align: center;
+    vertical-align: bottom;
     font-size: 40pt;
-    padding-top: 10%;
-    padding-bottom: 10%;
+    /* padding-top: 10%; */
+    /* padding-bottom: %; */
+    color: rgb(237, 37, 83);
+    display: inline;
+}
+.subtitle
+{
+    /* padding-top:10px; */
+    display: inline;
+    vertical-align: top;
+    font-family: Noto Sans,sans-serif;
+    text-align: center;
+    /* font-size: 20pt; */
+    /* padding-bottom: 10%; */
     color: rgb(237, 37, 83);
 }
+
 
 .mistakediv
 {
@@ -88,6 +124,8 @@ zz */
 
 #x44gridContainer
 {
+
+  transition: 300ms;
     /* border:2px; */
     /* border-color: rgb(215, 215, 215);
     border-style:solid; */
