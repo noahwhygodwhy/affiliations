@@ -6,6 +6,10 @@
         "directory": "./dist/affiliations/browser"
     },
 
+    "secrets": {
+		"required": ["TestSecret"]
+	},
+
     "triggers":
     {
         "crons": ["59 23 LW * *"]
