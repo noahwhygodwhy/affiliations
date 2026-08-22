@@ -228,7 +228,6 @@ export class App implements OnInit, AfterViewInit{
   {
     let currMatchPick:number = -1;
 
-
     for(let i = 0; i < this.dataEntries.length; i++)
     {
       if(this.dataEntries[i].selected)
@@ -266,24 +265,24 @@ export class App implements OnInit, AfterViewInit{
           }
         }
       }
-      setTimeout(()=>{
-        for(let i = 0; i < this.dataEntries.length; i++)
-        {
-          if(this.dataEntries[i].selected)
-          {
-            let boxI:HTMLElement|null = document.getElementById("square"+i);
-            if(boxI != null)
-            {
-              boxI.className = boxI.className.replace(" wigglyButtonCauseYoureDum","");
-            }
-            else
-            {
-              console.error("square"+i, "is null")
-            }
-          }
-        }
-      }, 300)
-      console.log("Bad Match")
+      // setTimeout(()=>{
+      //   for(let i = 0; i < this.dataEntries.length; i++)
+      //   {
+      //     if(this.dataEntries[i].selected)
+      //     {
+      //       let boxI:HTMLElement|null = document.getElementById("square"+i);
+      //       if(boxI != null)
+      //       {
+      //         boxI.className = boxI.className.replace(" wigglyButtonCauseYoureDum","");
+      //       }
+      //       else
+      //       {
+      //         console.error("square"+i, "is null")
+      //       }
+      //     }
+      //   }
+      // }, 300);
+      // console.log("Bad Match");
       return;
     }
     // if we get here, then we know we have a mtach, and the match index is currMatchPick
