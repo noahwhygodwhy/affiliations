@@ -85,6 +85,7 @@ export class App implements OnInit, AfterViewInit{
   mistakesRemaining:number = 4;
   numMatchesMade:number = 0;
   won = false;
+  justTriedBadMatch = false;
   constructor()
   {
   }
@@ -188,6 +189,7 @@ export class App implements OnInit, AfterViewInit{
 
   trySelect(index:number) : void
   {
+    this.justTriedBadMatch = false;
     for(let i = 0; i < this.dataEntries.length; i++)
     {
       if(this.dataEntries[i].selected)
@@ -269,6 +271,7 @@ export class App implements OnInit, AfterViewInit{
 
     if(currMatchPick == -1)
     {
+      this.justTriedBadMatch = true;
       for(let i = 0; i < this.dataEntries.length; i++)
       {
         if(this.dataEntries[i].selected)

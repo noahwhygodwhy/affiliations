@@ -68,7 +68,7 @@
         <div class="btn-group bottombuttons">
         <button (click)="shuffleEntries()" type="button" class="btn btn-secondary">Shuffle</button>
         <button (click)="deselectAll()" type="button" class="btn btn-secondary">Deselect</button>
-        <button (click)="trySubmit()" [disabled]="(!has4ButtonsSelected) || (mistakesRemaining == 0)" type="button" class="btn btn-secondary">Submit</button>
+        <button (click)="trySubmit()" [disabled]="(!has4ButtonsSelected) || (mistakesRemaining == 0) || justTriedBadMatch" type="button" class="btn btn-secondary">Submit</button>
         </div>
     </div>
     }
