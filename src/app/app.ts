@@ -188,6 +188,23 @@ export class App implements OnInit, AfterViewInit{
 
   trySelect(index:number) : void
   {
+    for(let i = 0; i < this.dataEntries.length; i++)
+    {
+      if(this.dataEntries[i].selected)
+      {
+        let boxI:HTMLElement|null = document.getElementById("square"+i);
+        if(boxI != null)
+        {
+          // this done here instead of a timeout after setting the class is because SetTimeout doesn't seem to work on mobile? idk
+          boxI.className = boxI.className.replace(" wigglyButtonCauseYoureDum","");
+        }
+        else
+        {
+          console.error("square"+i, "is null")
+        }
+      }
+    }
+
     let numselected:number = this.countSelected();
 
     if(this.dataEntries[index].matched)
@@ -212,6 +229,8 @@ export class App implements OnInit, AfterViewInit{
         this.has4ButtonsSelected = true;
       }
     }
+    // settimeout();
+    // setTimeout()/
     // this.tentativeAnimationThing();
   }
 
