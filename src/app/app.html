@@ -55,18 +55,28 @@
     <div class="row flex-grow-1">
         <h2 class="mistakediv">
         Mistakes remaining:
+        <br>
         @for(ind of [...[].constructor(mistakesRemaining).keys()]; track ind)
         {
-            X
+            &#x25cf;
         }
         </h2>
     </div>
     <div class="row flex-grow-1">
+    @if(numMatchesMade < 4)
+    {
         <div class="btn-group bottombuttons">
         <button (click)="shuffleEntries()" type="button" class="btn btn-secondary">Shuffle</button>
         <button (click)="deselectAll()" type="button" class="btn btn-secondary">Deselect</button>
         <button (click)="trySubmit()" [disabled]="!has4ButtonsSelected" type="button" class="btn btn-secondary">Submit</button>
         </div>
+    }
+    @else
+    {
+        <h3 class="subtitle">{{dateString}}</h3>
+        <h1 class="title">You Win!</h1>
+        <h3 class="subtitle">Congrats You Gooner :D</h3>
+    }
     </div>
 </div>
 

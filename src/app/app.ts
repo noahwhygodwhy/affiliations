@@ -1,10 +1,8 @@
 import { Component, signal, OnInit, AfterViewInit, afterNextRender, OnChanges, DoCheck} from '@angular/core';
-import { Data, RouterOutlet } from '@angular/router';
-import {Grid, GridRow, GridCell, GridCellWidget} from '@angular/aria/grid';
+import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-
-import {MatCardModule} from '@angular/material/card';
+import { Temporal } from '@js-temporal/polyfill';
 
 export interface MatchEntry
 {
@@ -93,14 +91,16 @@ export class App implements OnInit, AfterViewInit{
 
   shuffleEntries()
   {
-    console.log("shuffling");
+    // console.log("shuffling");
     this.dataEntries = shuffle(this.dataEntries, this.numMatchesMade*4);
     this.tentativeAnimationThing();
 
   }
 
+  dateString:string = "";
   ngOnInit()
   {
+    this.dateString = Temporal.Now.plainDateISO().toString();
     // speicifically not calling shuffleEntries as that has animation tthing
     this.dataEntries = shuffle(this.dataEntries, this.numMatchesMade*4);
   }
@@ -117,7 +117,7 @@ export class App implements OnInit, AfterViewInit{
         let d : DOMRect = boxI.getBoundingClientRect();
         this.dataEntries[i].oldX = d.left;
         this.dataEntries[i].oldY = d.top;
-        console.log(i, d.top, d.left);
+        // console.log(i, d.top, d.left);
       }
       else
       {
@@ -143,7 +143,7 @@ export class App implements OnInit, AfterViewInit{
         this.dataEntries[i].oldX = d.left;
         this.dataEntries[i].oldY = d.top;
 
-        console.log(i, d.top, d.left);
+        // console.log(i, d.top, d.left);
       }
       else
       {
@@ -170,6 +170,7 @@ export class App implements OnInit, AfterViewInit{
   }
 
 
+
   ngOnChanges()
   {
     console.log("ngOnChanges");
@@ -189,6 +190,11 @@ export class App implements OnInit, AfterViewInit{
   {
     let numselected:number = this.countSelected();
 
+    if(this.dataEntries[index].matched)
+    {
+      return;
+    }
+
     let isAlreadySelected : boolean = this.dataEntries[index].selected;
 
     if(isAlreadySelected)
@@ -206,7 +212,7 @@ export class App implements OnInit, AfterViewInit{
         this.has4ButtonsSelected = true;
       }
     }
-    this.tentativeAnimationThing();
+    // this.tentativeAnimationThing();
   }
 
   deselectAll():void
@@ -267,7 +273,7 @@ export class App implements OnInit, AfterViewInit{
 
 
     this.dataEntries.sort((dataA:DataEntry, dataB:DataEntry) => {
-      console.log("comparing", dataA, dataB);
+      // console.log("comparing", dataA, dataB);
       if(dataA.matched != dataB.matched)
       {
         return dataA.matched < dataB.matched ? 1 : -1;
