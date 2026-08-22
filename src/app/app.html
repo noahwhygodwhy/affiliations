@@ -52,7 +52,7 @@
         }
         </div>
     </div>
-    @if(numMatchesMade < 4)
+    @if((numMatchesMade < 4) && (mistakesRemaining > 0))
     {
     <div class="row flex-grow-1">
         <h2 class="mistakediv">
@@ -68,38 +68,28 @@
         <div class="btn-group bottombuttons">
         <button (click)="shuffleEntries()" type="button" class="btn btn-secondary">Shuffle</button>
         <button (click)="deselectAll()" type="button" class="btn btn-secondary">Deselect</button>
-        <button (click)="trySubmit()" [disabled]="!has4ButtonsSelected" type="button" class="btn btn-secondary">Submit</button>
+        <button (click)="trySubmit()" [disabled]="(!has4ButtonsSelected) || (mistakesRemaining == 0)" type="button" class="btn btn-secondary">Submit</button>
         </div>
     </div>
     }
     @else
     {
-    <div class="row flex-grow-1">
-        <h3 class="subtitle">{{dateString}}</h3>
-        <h1 class="title">You Win!</h1>
-        <h3 class="subtitle">Congrats You Gooner :D</h3>
-    </div>
+        @if(won)
+        {
+            <div class="row flex-grow-1">
+                <h3 class="subtitle">{{dateString}}</h3>
+                <h1 class="title">You Win!</h1>
+                <h3 class="subtitle">Congrats You Gooner :D</h3>
+            </div>
+        }
+        @else
+        {
+            <div class="row flex-grow-1">
+                <h3 class="subtitle">{{dateString}}</h3>
+                <h1 class="title">You Lose</h1>
+                <h3 class="subtitle">Smhmh D:</h3>
+            </div>
+        }
     }
 </div>
-
-<!-- <div class="container">
-    <div class="row">
-
-    </div>
-    <div class="row">
-        <table>
-
-        @for(rowIndex of [0, 1, 2, 3]; track rowIndex) {
-            <tr>
-                @for(colIndex of [0, 1, 2, 3]; track colIndex) {
-                    <td>
-                        @let dataEntry = dataEntries[colIndex + (rowIndex*4)];
-                        <button type="button" class="entryButton">{{dataEntry.title}}</button>
-                    </td>
-                }
-            </tr>
-        }
-        </table>
-    </div>
-</div> -->
 <router-outlet />

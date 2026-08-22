@@ -84,7 +84,7 @@ export class App implements OnInit, AfterViewInit{
   has4ButtonsSelected:boolean = false;
   mistakesRemaining:number = 4;
   numMatchesMade:number = 0;
-
+  won = false;
   constructor()
   {
   }
@@ -162,7 +162,7 @@ export class App implements OnInit, AfterViewInit{
         }
         else
         {
-        console.error("square"+i, "is null")
+          console.error("square"+i, "is null")
         }
       };
     });
@@ -242,6 +242,7 @@ export class App implements OnInit, AfterViewInit{
           if(this.dataEntries[i].matchGroupIndex != currMatchPick) // TODO: refactor to allow for a "close guess" hint?
           {
             currMatchPick=-1;
+            this.mistakesRemaining--;
             break;
           }
         }
@@ -250,6 +251,38 @@ export class App implements OnInit, AfterViewInit{
 
     if(currMatchPick == -1)
     {
+      for(let i = 0; i < this.dataEntries.length; i++)
+      {
+        if(this.dataEntries[i].selected)
+        {
+          let boxI:HTMLElement|null = document.getElementById("square"+i);
+          if(boxI != null)
+          {
+            boxI.className = boxI.className + " wigglyButtonCauseYoureDum";
+          }
+          else
+          {
+            console.error("square"+i, "is null")
+          }
+        }
+      }
+      setTimeout(()=>{
+        for(let i = 0; i < this.dataEntries.length; i++)
+        {
+          if(this.dataEntries[i].selected)
+          {
+            let boxI:HTMLElement|null = document.getElementById("square"+i);
+            if(boxI != null)
+            {
+              boxI.className = boxI.className.replace(" wigglyButtonCauseYoureDum","");
+            }
+            else
+            {
+              console.error("square"+i, "is null")
+            }
+          }
+        }
+      }, 300)
       console.log("Bad Match")
       return;
     }
@@ -310,6 +343,7 @@ export class App implements OnInit, AfterViewInit{
     if(this.numMatchesMade == 4)
     {
       // todo; handle win?
+      this.won = true;
       console.log("win omg yoou did it wooooooooooo?");
     }
 
