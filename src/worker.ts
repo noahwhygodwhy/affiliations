@@ -1,9 +1,4 @@
 
-interface Env {
-	TestSecret:string; // todo; is this the right thing?
-}
-
-
 export default {
 
 	async fetch(
@@ -33,6 +28,7 @@ export default {
 		ctx: ExecutionContext,
 	) {
 		console.log("cron processed");
+		let testSecretValue:string = env.TestSecret;
 		console.log("testing a fake secret access:", env.TestSecret);
 	},
 };
