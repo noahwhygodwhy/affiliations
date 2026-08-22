@@ -87,14 +87,17 @@
 
 .wigglyButtonCauseYoureDum{
     animation-name: wiggle;
+    -moz-animation-name: wiggle;
     -webkit-animation-name: wiggle;
     -ms-animation-name: wiggle;
     animation-duration: 300ms;
     -ms-animation-duration: 300ms;
+    -moz-animation-duration: 300ms;
     -webkit-animation-duration: 300ms;
     animation-iteration-count: 1;
-    -webkit-animation-iteration-count: 1;
+    -moz-animation-iteration-count: 1;
     -ms-animation-iteration-count: 1;
+    -webkit-animation-iteration-count: 1;
 
     /* -webkit-animation-timing-function: ease-in-out; */
     /* -ms-animation-timing-function: ease-in-out; */
@@ -114,6 +117,15 @@
     50% {-ms-transform: rotate(1.5deg);}
     75% {-ms-transform: rotate(-5deg);}
     100% {-ms-transform: rotate(0deg);}
+}
+
+@-moz-keyframes wiggle
+{
+    0% {-moz-transform: rotate(1deg);}
+    25% {-moz-transform: rotate(-1deg);}
+    50% {-moz-transform: rotate(1.5deg);}
+    75% {-moz-transform: rotate(-5deg);}
+    100% {-moz-transform: rotate(0deg);}
 }
 
 @keyframes wiggle {
