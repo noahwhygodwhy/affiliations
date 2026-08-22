@@ -1,0 +1,6 @@
+{
+  "name": "affiliations",
+  "assets": {
+    "directory": "./dist/affiliations/browser"
+  }
+}
