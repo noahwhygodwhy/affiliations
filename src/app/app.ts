@@ -257,6 +257,8 @@ export class App implements OnInit, AfterViewInit{
           let boxI:HTMLElement|null = document.getElementById("square"+i);
           if(boxI != null)
           {
+            // does this work
+            boxI.className = boxI.className.replace(" wigglyButtonCauseYoureDum","");
             boxI.className = boxI.className + " wigglyButtonCauseYoureDum";
           }
           else
