@@ -28,7 +28,7 @@ export default {
 		ctx: ExecutionContext,
 	) {
 		console.log("cron processed");
-		let testSecretValue:string = env.TestSecret;
-		console.log("testing a fake secret access:", env.TestSecret);
+		let testSecretValue:string = await env.TestSecret.get();
+		console.log("testing a fake secret access:", testSecretValue);
 	},
 };

@@ -5,11 +5,13 @@
     "assets": {
         "directory": "./dist/affiliations/browser"
     },
-
-    "secrets": {
-		"required": ["TestSecret"]
-	},
-
+    "secrets_store_secrets": [
+        {
+        "binding": "TestSecret",
+        "store_id": "867282d07e2644be82888434e4cf30dc",
+        "secret_name": "TestSecret"
+        }
+    ],
     "triggers":
     {
         "crons": ["59 23 LW * *"]
