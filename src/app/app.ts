@@ -1,8 +1,9 @@
 import { Component, signal, OnInit, AfterViewInit, afterNextRender, OnChanges, DoCheck} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Data, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { Temporal } from '@js-temporal/polyfill';
+import { DatabaseRow } from '../nhSchema';
 
 export interface MatchEntry
 {
@@ -14,7 +15,6 @@ export interface MatchEntry
 export interface DataEntry
 {
     title : string;
-    description : string;
     tags :string[];
     image: string;
     matchGroupIndex : number;
@@ -38,7 +38,6 @@ function shuffle(array : DataEntry[], minimumIndexToTouch:number) : DataEntry[]
         let tempA = array[currentIndex];
         let tempB = array[randomIndex];
 
-
         // make it realize there's a change?
         array[currentIndex] = {...tempB};
         array[randomIndex] = {...tempA};
@@ -48,7 +47,8 @@ function shuffle(array : DataEntry[], minimumIndexToTouch:number) : DataEntry[]
 
 async function LoadTodaysEntry()
 {
-    let resp : Promise<Response> = fetch(
+
+    let resp = fetch(
         "https://affiliations.noah.exposed/fetchtodaysids",
         {
             method:"GET",
@@ -58,7 +58,23 @@ async function LoadTodaysEntry()
             ]
         }
     ).then((val)=>val.json());
-    console.log((await resp));
+
+
+    let data: DatabaseRow[] = (await resp) as DatabaseRow[];
+
+    let fetchedDataEntries: DataEntry[] = data.map((d:DatabaseRow):DataEntry => {
+        return {
+            title: d.title,
+            tags: JSON.parse(d.tagIdList),
+            image:"https://affiliations.noah.exposed/proxyCDN/" + d.thumnailUrlSuffix,
+            matchGroupIndex:d.matchIndex,
+            selected:false,
+            matched:false,
+            oldX:0,
+            oldY:0
+        }
+    });
+    return fetchedDataEntries;
 
     // fetch against https://affiliations.noah.exposed/
     // await the result and parse it into an array of DataEntries (might need to modify the type)
@@ -82,24 +98,7 @@ export class App implements OnInit, AfterViewInit{
 
     // selectedEntries : DataEntry[] = [];
 
-    dataEntries : DataEntry[] = [
-      {title:"titlea1", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titleb1", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titlec1", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titled1", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titlea2", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titleb2", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titlec2", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titled2", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titlea3", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titleb3", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titlec3", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titled3", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titlea4", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titleb4", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titlec4", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
-      {title:"titled4", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
-    ];
+    dataEntries : DataEntry[] = []
 
     has4ButtonsSelected:boolean = false;
     mistakesRemaining:number = 4;
@@ -125,11 +124,7 @@ export class App implements OnInit, AfterViewInit{
         this.dateString = Temporal.Now.plainDateISO().toString();
         // speicifically not calling shuffleEntries as that has animation tthing
 
-        LoadTodaysEntry();
-        this.dataEntries = shuffle(this.dataEntries, this.numMatchesMade*4);
-
-
-
+        LoadTodaysEntry().then((data)=>this.dataEntries = data).then(()=>{this.ready=true});
     }
 
     ngAfterViewInit()

@@ -51,7 +51,8 @@ async function FetchTodaysIds(env:Env) : Promise<Response>
 	let dateString = Temporal.Now.plainDateISO().toString();
 	let resultOfDBQuery = await env.daily_ids.prepare("SELECT * FROM daily_ids WHERE dateUsed = ?").bind(dateString).run<DatabaseRow>();
 
-	return new Response(JSON.stringify(resultOfDBQuery),
+	assert(resultOfDBQuery.success == true, "db query failed for some reason?")
+	return new Response(JSON.stringify(resultOfDBQuery.results),
 	{
 		status: 200,
 		headers: { "Content-Type": "application/json" },
@@ -84,6 +85,12 @@ export default {
 		{
 			return await FetchTodaysIds(env);
 		}
+		if(url.pathname.startsWith("/proxyCDN"))
+		{
+			console.log(url.pathname);
+			return await fetch("https://i.imgur.com/pwV3Aqg.png");
+		}
+
 		return new Response("Not found", { status: 404 });
 	},
 
