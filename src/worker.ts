@@ -71,7 +71,7 @@ export default {
 					insertString += i + ", "
 					insertString += todaysDateString + ", "
 					insertString += singleData.id + ", "
-					insertString += i/4 + (i < 15 ? "), " : "")
+					insertString += i/4 + (i < 15 ? "), " : ")")
 				}
 				console.log(insertString);
 				await env.daily_ids.prepare(insertString).run();
