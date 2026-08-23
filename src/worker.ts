@@ -45,9 +45,17 @@ function PutCommonTagAtFront(commonTag:number, arrayIn : number[]) : number[]
 	return [commonTag, ...arrayIn];
 }
 
-function FetchTodaysIds(env:Env) : Response
+async function FetchTodaysIds(env:Env) : Promise<Response>
 {
 
+	let dateString = Temporal.Now.plainDateISO().toString();
+	let resultOfDBQuery = await env.daily_ids.prepare("SELECT * FROM daily_ids WHERE dateUsed = ?").bind(dateString).run<DatabaseRow>();
+
+	return new Response(JSON.stringify(resultOfDBQuery),
+	{
+		status: 200,
+		headers: { "Content-Type": "application/json" },
+	});
 
 }
 
@@ -74,7 +82,7 @@ export default {
 		}
 		if(url.pathname === "/fetchtodaysids")
 		{
-			return FetchTodaysIds(env);
+			return await FetchTodaysIds(env);
 		}
 		return new Response("Not found", { status: 404 });
 	},

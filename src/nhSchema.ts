@@ -44,7 +44,13 @@ export interface SearchResult
 
 
 // this is my own schema, not nh, but i need a common file
-export interface DatabaseEntry
+export interface DatabaseRow
 {
-
+    indexInDay : number;
+    dateUsed : string;
+    sixDigis:string;
+    matchIndex:number;
+    tagIdList : string;
+    thumnailUrlSuffix:string;
+    title:string;
 }

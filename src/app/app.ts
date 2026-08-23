@@ -46,7 +46,7 @@ function shuffle(array : DataEntry[], minimumIndexToTouch:number) : DataEntry[]
     return array;
 }
 
-function LoadTodaysEntry()
+async function LoadTodaysEntry()
 {
     let resp : Promise<Response> = fetch(
         "https://affiliations.noah.exposed/fetchtodaysids",
@@ -58,8 +58,9 @@ function LoadTodaysEntry()
                 ["Authorization", "anon"],
             ]
         }
-    );
-    fetchtodaysids
+    ).then((val)=>val.json());
+    console.log((await resp));
+
     // fetch against https://affiliations.noah.exposed/
     // await the result and parse it into an array of DataEntries (might need to modify the type)
     // shuffle
@@ -82,28 +83,29 @@ export class App implements OnInit, AfterViewInit{
 
     // selectedEntries : DataEntry[] = [];
 
-    dataEntries : DataEntry[] = []
-    //   {title:"titlea1", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titleb1", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titlec1", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titled1", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titlea2", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titleb2", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titlec2", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titled2", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titlea3", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titleb3", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titlec3", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titled3", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titlea4", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titleb4", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titlec4", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
-    //   {title:"titled4", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
-    // ];
+    dataEntries : DataEntry[] = [
+      {title:"titlea1", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titleb1", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titlec1", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titled1", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 1, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titlea2", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titleb2", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titlec2", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titled2", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 2, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titlea3", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titleb3", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titlec3", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titled3", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 3, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titlea4", description: "description a1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titleb4", description: "description b1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titlec4", description: "description c1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
+      {title:"titled4", description: "description d1", tags: ["a", "b", "c", "d"], image: "www.ahhhh.com", matchGroupIndex: 4, selected:false, matched:false, oldX:0, oldY:0},
+    ];
 
     has4ButtonsSelected:boolean = false;
     mistakesRemaining:number = 4;
     numMatchesMade:number = 0;
+    ready = false;
     won = false;
     justTriedBadMatch = false;
     constructor()
@@ -124,8 +126,8 @@ export class App implements OnInit, AfterViewInit{
         this.dateString = Temporal.Now.plainDateISO().toString();
         // speicifically not calling shuffleEntries as that has animation tthing
 
-
-        this.dataEntries = LoadTodaysEntry();//shuffle(this.dataEntries, this.numMatchesMade*4);
+        LoadTodaysEntry();
+        this.dataEntries = shuffle(this.dataEntries, this.numMatchesMade*4);
 
 
 
@@ -414,7 +416,7 @@ export class App implements OnInit, AfterViewInit{
             console.log("win omg yoou did it wooooooooooo?");
         }
 
-        if()
+        // if()
 
         this.tentativeAnimationThing();
     }
