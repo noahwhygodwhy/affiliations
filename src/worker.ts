@@ -117,45 +117,25 @@ export default {
 					`https://nhentai.net/api/v2/search?query=tag:"${fourTagNames[3]}" -tag:"${fourTagNames[0]}" -tag:"${fourTagNames[1]}" -tag:"${fourTagNames[2]}" &sort=popular-month&page=1`
 				];
 
+				// let searchPromises:Promise<Response|void>[] = [];
+				let fetchInfo :RequestInit<RequestInitCfProperties> = {
+					method:"GET",
+					headers:[
+						["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"],
+						["Accept", "application/json"],
+						["Authorization", "anon"],
+					]
+				};
 
-				let searchPromises:Promise<Response>[] = [];
-				searchStrings.forEach((val:string)=>
-				{
-					searchPromises.push(
-						fetch(
-							"https://nhentai.net/api/v2/tags/tag?sort=popular&page=1&per_page=25",
-							{
-								method:"GET",
-								headers:[
-									["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"],
-									["Accept", "application/json"],
-									["Authorization", "anon"],
-								]
-							}
-						)
-					);
-				});
+				console.log("conducting fetch");
+				let searchResults:SearchResult[] = await Promise.all([
+					fetch(searchStrings[0], fetchInfo).then(res => res.json<SearchResult>()),
+					fetch(searchStrings[1], fetchInfo).then(res => res.json<SearchResult>()),
+					fetch(searchStrings[2], fetchInfo).then(res => res.json<SearchResult>()),
+					fetch(searchStrings[3], fetchInfo).then(res => res.json<SearchResult>()),
+				]);
 
-				let jsonPromises:Promise<unknown>[] = [];
-
-				searchPromises.forEach(async (val : Promise<Response>)=>
-				{
-					let res : Response = await(val);
-					assert(InGoodStatusRange(res.status), "Bad response status for search");
-					jsonPromises.push(res.json());
-
-				});
-
-				let searchResults:SearchResult[] = [];
-
-				jsonPromises.forEach(async (val : Promise<unknown>)=>
-				{
-					searchResults.push((await val) as SearchResult);
-				});
-
-
-
-
+				console.log("searchResults.length", searchResults.length);
 				// 4x4 array of match sets
 				let chosenSearchResults:SingleSearchResult[][] = [];
 
@@ -178,30 +158,30 @@ export default {
 				});
 
 				let insertString = "INSERT INTO daily_ids VALUES"
-				for(let matchIndex = 0; matchIndex < 4; matchIndex)
+				let insertionValueArray: any[] = [];
+				for(let matchIndex = 0; matchIndex < 4; matchIndex++)
 				{
 					for(let indexInMatch = 0; indexInMatch < 4; indexInMatch++)
 					{
 						let indexOutOf16 = (matchIndex*4) + indexInMatch;
 						let singleData = chosenSearchResults[matchIndex][indexInMatch];
-
 						let tagIdArrayString:string = JSON.stringify(singleData.tag_ids);
 
-						// the below has very very very sensitive single quotes, be careful
-						insertString += " (";
-						insertString += (indexOutOf16 + ", ");
-						insertString += "'" + (todaysDateString + "', ");
-						insertString += "'" + (singleData.id + "', ");
-						insertString += "'" + (matchIndex + "', ");
-						insertString += "'" + (tagIdArrayString + "', ");
-						insertString += "'" + (singleData.thumbnail + "', ");
-						insertString += "'" + (singleData.english_title + (indexOutOf16 < 15 ? "'), " : "')"));
+						// 7 columsn of data, 7 ?s
+						insertString += " (?, ?, ?, ?, ?, ?, ?)" + (indexOutOf16<15 ? "," : "");// last one gets no ,;
+						insertionValueArray.push(indexOutOf16)
+						insertionValueArray.push(todaysDateString)
+						insertionValueArray.push(singleData.id)
+						insertionValueArray.push(matchIndex)
+						insertionValueArray.push(tagIdArrayString)
+						insertionValueArray.push(singleData.thumbnail)
+						insertionValueArray.push(singleData.english_title)
 					}
 				}
 
 				console.log(insertString);
 				await deletionPromise;
-				await env.daily_ids.prepare(insertString).run();
+				await env.daily_ids.prepare(insertString).bind(insertionValueArray).run();
 			}
 			else if(tagResponse.status == 429)
 			{
