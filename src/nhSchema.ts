@@ -1,4 +1,24 @@
 
+
+export interface SingleTagResult
+{
+    "id": number,
+    "type": string,
+    "name": string,
+    "slug": string,
+    "url": string,
+    "count": number,
+    "description": string
+};
+
+export interface TagResult
+{
+    "result":SingleTagResult[];
+    "num_pages": number;
+    "per_page": number;
+    "total": number;
+}
+
 export interface SingleSearchResult
 {
     "id": number;

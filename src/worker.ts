@@ -1,6 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 
-import { SearchResult } from "./nhSchema"
+import { SearchResult, TagResult, SingleSearchResult, SingleTagResult } from "./nhSchema"
+
+import { Temporal } from '@js-temporal/polyfill';
 
 
 interface DatabaseRow
@@ -25,7 +27,7 @@ export default {
 			scheduledTime: Date.now(),
 			noRetry: ()=>{return true;}
 		};
-		let statusString = await this.scheduled(controller, env, ctx, true);
+		let statusString = await this.scheduled(controller, env, ctx);
 		return new Response("Scheduled handler triggered successfully\n" +statusString, {
 			status: 200,
 			headers: { "Content-Type": "text/plain" },
@@ -37,43 +39,57 @@ export default {
 	async scheduled(
 		controller: ScheduledController,
 		env: Env,
-		ctx: ExecutionContext,
-		doReturn?: boolean
+		ctx: ExecutionContext
 	) : Promise<string | void>{
 		{ // section for the first tag request
 			let requestInitInfo : RequestInit = {
 				method:"GET",
 				headers:[
-					// ["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"],
+					["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"],
 					// ["Content-Type", "application/json"],
-					// ["Accept", "application/json"],
-					// ["Authorization", "anon"], // idk which it wants
+					["Accept", "application/json"],
+					["Authorization", "anon"], // idk which it wants
 					// ["auth", "anon"]
 					],
 			}
 			let tagRequest : Request = new Request("https://nhentai.net/api/v2/tags/tag?sort=popular&page=1&per_page=25", requestInitInfo);
 			let tagResponse:Response = await fetch(tagRequest)
-			if(doReturn)
-			{
-				return "" +
-					tagResponse.status + "\n" +
-					tagResponse.url + "\n" +
-					(await tagResponse.text())
-			}
+
 			console.log("tagrepsonse.status", await tagResponse.text())
-			// if((tagResponse.status >= 200) && (tagResponse.status < 300))
-			// {
-			// 	let data = await tagResponse.json() as SearchResult;
-			// 	console.log(data);
-			// }
-			// else if(tagResponse.status == 429)
-			// {
-			// 	console.log("429 received")
-			// }
-			// else
-			// {
-			// 	console.log("Bad Response from ")
-			// }
+
+			if((tagResponse.status >= 200) && (tagResponse.status < 300))
+			{
+				env.daily_ids.prepare("")
+				let todaysDateString = Temporal.Now.plainDateISO().toString();
+				env.daily_ids.prepare("DELETE * FROM daily_ids WHERE dateUsed = " + todaysDateString)
+
+				let data = await tagResponse.json() as TagResult;
+
+				let insertString = "INSERT INTO daily_ids VALUES"
+				for(let i = 0; i < 16; i++)
+				{
+					let singleData:SingleTagResult = data.result[i];
+
+					let id :string = singleData.id + "";
+					let matchIndex :number = i/4;
+					insertString += " ("
+					insertString += i + ", "
+					insertString += todaysDateString + ", "
+					insertString += singleData.id + ", "
+					insertString += i/4 + "), "
+				}
+				await env.daily_ids.prepare(insertString).run();
+
+				console.log(data);
+			}
+			else if(tagResponse.status == 429)
+			{
+				console.log("429 received")
+			}
+			else
+			{
+				console.log("Bad Response from ")
+			}
 		}
 
 		console.log("cron processed");
