@@ -5,12 +5,29 @@ import { SearchResult, TagResult, SingleSearchResult, SingleTagResult } from "./
 import { Temporal } from '@js-temporal/polyfill';
 
 
+function getRandomInt(max:number) :number {
+  return Math.floor(Math.random() * max);
+}
+
 interface DatabaseRow
 {
 	indexInDay:number;
 	dateUsed:string;
 	sixDigis:string;
 	matchIndex:number;
+}
+
+function InGoodStatusRange(statusIn:number):boolean
+{
+	return (statusIn >= 200) && (statusIn < 300)
+}
+
+function assert(assertion:boolean, msg:string)
+{
+	if(assertion != true)
+	{
+		console.error("Failed Assertion: ", msg);
+	}
 }
 
 export default {
@@ -53,33 +70,138 @@ export default {
 					]
 				}
 			)
+			let todaysDateString = Temporal.Now.plainDateISO().toString();
 
-			if((tagResponse.status >= 200) && (tagResponse.status < 300))
+			if(InGoodStatusRange(tagResponse.status))
 			{
-				let todaysDateString = Temporal.Now.plainDateISO().toString();
+
 				console.log("date string:", todaysDateString);
 				let deleteString = "DELETE FROM daily_ids WHERE dateUsed = '"+ todaysDateString + "'";
 				console.log("deleteString:", deleteString);
-				await env.daily_ids.prepare(deleteString).run();
+				// removes any existing entries for today, this is more just for testing,
+				// on the scheduled cron job this should never remove anything (TODO: should i add a test for that?)
+				let deletionPromise =  env.daily_ids.prepare(deleteString).run();
 
-				let data = await tagResponse.json() as TagResult;
+				let fourTagNames :string[] = [];
+				{
+					let data = await tagResponse.json() as TagResult;
+
+					// ok so we have an arrya of tag results
+					let numTagsReturned = data.result.length;
+					let topNumTagsToPickFrom = Math.min(100, numTagsReturned);
+
+					let fourTagIndices :number[] = []; // these are indices in the returned array, not the IDs
+					for(let i = 0; i < 4; i++)
+					{
+						let newIndex:number;
+						do
+						{
+							newIndex = getRandomInt(topNumTagsToPickFrom);
+						} while(fourTagIndices.find((val:number) => {val = newIndex}) != undefined);
+						fourTagIndices.push(newIndex);
+						fourTagNames.push(data.result[newIndex].name);
+					}
+					console.log("fourTagNames:", fourTagNames);
+				}
+
+				// example https://nhentai.net/api/v2/search?query=tag:"big breasts" -tag:"sole male" -tag:"nakadashi" -tag:"stockings" &sort=date&page=1
+
+				// let searchResultPromises: Promise<SearchResult>[] = [];
+
+				// let readyToBeFormattedSearchString:string = 'https://nhentai.net/api/v2/search?query=tag:"${0}" -tag:"{1]}" -tag:"{2}" -tag:"{3}" &sort=popular-month&page=1';
+
+				let searchStrings:string[] = [
+					`https://nhentai.net/api/v2/search?query=tag:"${fourTagNames[0]}" -tag:"${fourTagNames[1]}" -tag:"${fourTagNames[2]}" -tag:"${fourTagNames[3]}" &sort=popular-month&page=1`,
+					`https://nhentai.net/api/v2/search?query=tag:"${fourTagNames[1]}" -tag:"${fourTagNames[0]}" -tag:"${fourTagNames[2]}" -tag:"${fourTagNames[3]}" &sort=popular-month&page=1`,
+					`https://nhentai.net/api/v2/search?query=tag:"${fourTagNames[2]}" -tag:"${fourTagNames[0]}" -tag:"${fourTagNames[1]}" -tag:"${fourTagNames[3]}" &sort=popular-month&page=1`,
+					`https://nhentai.net/api/v2/search?query=tag:"${fourTagNames[3]}" -tag:"${fourTagNames[0]}" -tag:"${fourTagNames[1]}" -tag:"${fourTagNames[2]}" &sort=popular-month&page=1`
+				];
+
+
+				let searchPromises:Promise<Response>[] = [];
+				searchStrings.forEach((val:string)=>
+				{
+					searchPromises.push(
+						fetch(
+							"https://nhentai.net/api/v2/tags/tag?sort=popular&page=1&per_page=25",
+							{
+								method:"GET",
+								headers:[
+									["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"],
+									["Accept", "application/json"],
+									["Authorization", "anon"],
+								]
+							}
+						)
+					);
+				});
+
+				let jsonPromises:Promise<unknown>[] = [];
+
+				searchPromises.forEach(async (val : Promise<Response>)=>
+				{
+					let res : Response = await(val);
+					assert(InGoodStatusRange(res.status), "Bad response status for search");
+					jsonPromises.push(res.json());
+
+				});
+
+				let searchResults:SearchResult[] = [];
+
+				jsonPromises.forEach(async (val : Promise<unknown>)=>
+				{
+					searchResults.push((await val) as SearchResult);
+				});
+
+
+
+
+				// 4x4 array of match sets
+				let chosenSearchResults:SingleSearchResult[][] = [];
+
+				searchResults.forEach((data:SearchResult, index:number) => {
+					let numResultsReturned = data.result.length;
+					let topNumResultsToPickFrom = Math.min(100, numResultsReturned);
+
+					let fourResultIndices :number[] = []; // these are indices in the returned array, not the IDs
+					chosenSearchResults.push([])
+					for(let i = 0; i < 4; i++)
+					{
+						let newIndex:number;
+						do
+						{
+							newIndex = getRandomInt(topNumResultsToPickFrom);
+						} while(fourResultIndices.find((val:number) => {val = newIndex}) != undefined);
+						fourResultIndices.push(newIndex);
+						chosenSearchResults[index].push(data.result[newIndex]);
+					}
+				});
 
 				let insertString = "INSERT INTO daily_ids VALUES"
-				for(let i = 0; i < 16; i++)
+				for(let matchIndex = 0; matchIndex < 4; matchIndex)
 				{
-					let singleData:SingleTagResult = data.result[i];
+					for(let indexInMatch = 0; indexInMatch < 4; indexInMatch++)
+					{
+						let indexOutOf16 = (matchIndex*4) + indexInMatch;
+						let singleData = chosenSearchResults[matchIndex][indexInMatch];
 
-					// the below has very very very sensitive single quotes, be careful
-					insertString += " (";
-					insertString += (i + ", ");
-					insertString += "'" + (todaysDateString + "', ");
-					insertString += "'" + (singleData.id + "', ");
-					insertString += (Math.floor(i/4) + (i < 15 ? "), " : ")"));
+						let tagIdArrayString:string = JSON.stringify(singleData.tag_ids);
+
+						// the below has very very very sensitive single quotes, be careful
+						insertString += " (";
+						insertString += (indexOutOf16 + ", ");
+						insertString += "'" + (todaysDateString + "', ");
+						insertString += "'" + (singleData.id + "', ");
+						insertString += "'" + (matchIndex + "', ");
+						insertString += "'" + (tagIdArrayString + "', ");
+						insertString += "'" + (singleData.thumbnail + "', ");
+						insertString += "'" + (singleData.english_title + (indexOutOf16 < 15 ? "'), " : "')"));
+					}
 				}
-				console.log(insertString);
-				await env.daily_ids.prepare(insertString).run();
 
-				console.log(data);
+				console.log(insertString);
+				await deletionPromise;
+				await env.daily_ids.prepare(insertString).run();
 			}
 			else if(tagResponse.status == 429)
 			{
