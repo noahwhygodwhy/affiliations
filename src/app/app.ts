@@ -53,9 +53,8 @@ async function LoadTodaysEntry()
         {
             method:"GET",
             headers:[
-                ["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"],
                 ["Accept", "application/json"],
-                ["Authorization", "anon"],
+                ["Access-Control-Allow-Origin", "https://affiliations.noah.exposed"]
             ]
         }
     ).then((val)=>val.json());
@@ -132,7 +131,6 @@ export class App implements OnInit, AfterViewInit{
 
 
     }
-
 
     ngAfterViewInit()
     {
