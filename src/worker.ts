@@ -56,9 +56,9 @@ export default {
 			if(doReturn)
 			{
 				return "" +
-					(await tagResponse.status) + "\n" +
+					tagResponse.status + "\n" +
 					tagResponse.url + "\n" +
-					tagResponse.status
+					(await tagResponse.text())
 			}
 			console.log("tagrepsonse.status", await tagResponse.text())
 			// if((tagResponse.status >= 200) && (tagResponse.status < 300))
