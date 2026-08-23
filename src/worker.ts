@@ -43,7 +43,13 @@ export default {
 		{ // section for the first tag request
 			let requestInitInfo : RequestInit = {
 				method:"GET",
-				headers:[["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"]],
+				headers:[
+					["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"],
+					["Content-Type", "application/json"],
+					["Accept", "application/json"],
+					["Authorization", "anon"], // idk which it wants
+					["auth", "anon"]
+					],
 			}
 			let tagRequest : Request = new Request("https://nhentai.net/api/v2/tags/tag?sort=popular&page=1&per_page=25", requestInitInfo);
 			let tagResponse:Response = await this.fetch(tagRequest, env, ctx)
