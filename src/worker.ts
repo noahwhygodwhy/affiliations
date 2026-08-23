@@ -57,7 +57,7 @@ export default {
 			if((tagResponse.status >= 200) && (tagResponse.status < 300))
 			{
 				let todaysDateString = Temporal.Now.plainDateISO().toString();
-				env.daily_ids.prepare("DELETE * FROM daily_ids WHERE dateUsed = " + todaysDateString).run()
+				env.daily_ids.prepare("DELETE FROM daily_ids WHERE dateUsed = ?").bind(todaysDateString).run()
 
 				let data = await tagResponse.json() as TagResult;
 
