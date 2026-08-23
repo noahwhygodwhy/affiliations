@@ -55,7 +55,7 @@ export default {
 			let tagResponse:Response = await this.fetch(tagRequest, env, ctx)
 			if(doReturn)
 			{
-				return tagResponse.text();
+				return tagResponse.text() + " \n" + tagResponse.headers;
 			}
 			console.log("tagrepsonse.status", await tagResponse.text())
 			// if((tagResponse.status >= 200) && (tagResponse.status < 300))
