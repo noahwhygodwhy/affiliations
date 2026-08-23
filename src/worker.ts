@@ -25,8 +25,8 @@ export default {
 			scheduledTime: Date.now(),
 			noRetry: ()=>{return true;}
 		};
-		await this.scheduled(controller, env, ctx);
-		return new Response("Scheduled handler triggered successfully", {
+		let statusString = await this.scheduled(controller, env, ctx, true);
+		return new Response("Scheduled handler triggered successfully\n" +statusString, {
 			status: 200,
 			headers: { "Content-Type": "text/plain" },
 		});
@@ -37,8 +37,9 @@ export default {
 	async scheduled(
 		controller: ScheduledController,
 		env: Env,
-		ctx: ExecutionContext
-	) {
+		ctx: ExecutionContext,
+		doReturn?: boolean
+	) : Promise<string | void>{
 		{ // section for the first tag request
 			let requestInitInfo : RequestInit = {
 				method:"GET",
@@ -46,6 +47,10 @@ export default {
 			}
 			let tagRequest : Request = new Request("https://nhentai.net/api/v2/tags/tag?sort=popular&page=1&per_page=25", requestInitInfo);
 			let tagResponse:Response = await this.fetch(tagRequest, env, ctx)
+			if(doReturn)
+			{
+				return tagResponse.text();
+			}
 			console.log("tagrepsonse.status", await tagResponse.text())
 			// if((tagResponse.status >= 200) && (tagResponse.status < 300))
 			// {
