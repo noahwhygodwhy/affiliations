@@ -30,6 +30,21 @@ function assert(assertion:boolean, msg:string)
 	}
 }
 
+interface Pair
+{
+	matchIndex:number;
+	indexInMatch:number;
+}
+
+function PutCommonTagAtFront(commonTag:number, arrayIn : number[]) : number[]
+{
+	const currCommonTagIndex = arrayIn.indexOf(commonTag);
+	assert(currCommonTagIndex!= -1, "Common tag not present in list of tags?");
+	arrayIn.splice(currCommonTagIndex, 1);
+
+	return [commonTag, ...arrayIn];
+}
+
 export default {
 
 	async fetch(
@@ -57,8 +72,17 @@ export default {
 		controller: ScheduledController,
 		env: Env,
 		ctx: ExecutionContext
-	) : Promise<string | void>{
+	) : Promise<string | void>
+	{
+
+
+
+
 		{ // section for the first tag request
+
+
+
+
 			let tagResponse = await fetch(
 				"https://nhentai.net/api/v2/tags/tag?sort=popular&page=1&per_page=25",
 				{
@@ -72,6 +96,7 @@ export default {
 			)
 			let todaysDateString = Temporal.Now.plainDateISO().toString();
 
+
 			if(InGoodStatusRange(tagResponse.status))
 			{
 
@@ -83,6 +108,7 @@ export default {
 				let deletionPromise =  env.daily_ids.prepare(deleteString).run();
 
 				let fourTagNames :string[] = [];
+				let fourTagIds :number[] = [];
 				{
 					let data = await tagResponse.json() as TagResult;
 
@@ -100,6 +126,7 @@ export default {
 						} while(fourTagIndices.find((val:number) => {val = newIndex}) != undefined);
 						fourTagIndices.push(newIndex);
 						fourTagNames.push(data.result[newIndex].name);
+						fourTagIds.push(data.result[newIndex].id);
 					}
 					console.log("fourTagNames:", fourTagNames);
 				}
@@ -157,31 +184,32 @@ export default {
 					}
 				});
 
-				let insertString = "INSERT INTO daily_ids VALUES"
-				let insertionValueArray: any[] = [];
-				for(let matchIndex = 0; matchIndex < 4; matchIndex++)
-				{
-					for(let indexInMatch = 0; indexInMatch < 4; indexInMatch++)
-					{
+				let insertString:string = "INSERT INTO daily_ids VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+
+				// make an arrya of every combo between two arrays 0-4 (there's def an easier way to do this but idk i like map)
+				let indicesIndices:{matchIndex:number, indexInMatch:number}[]= ([0, 1, 2, 3] as number[]).flatMap((matchIndex:number) => {return ([0, 1, 2, 3] as number[]).map((indexInMatch:number)=> {return {matchIndex:matchIndex, indexInMatch:indexInMatch}});});
+
+				await deletionPromise;
+				await Promise.all(
+					indicesIndices.map(({matchIndex, indexInMatch})=>{
+
 						let indexOutOf16 = (matchIndex*4) + indexInMatch;
 						let singleData = chosenSearchResults[matchIndex][indexInMatch];
-						let tagIdArrayString:string = JSON.stringify(singleData.tag_ids);
-
-						// 7 columsn of data, 7 ?s
-						insertString += " (?, ?, ?, ?, ?, ?, ?)" + (indexOutOf16<15 ? "," : "");// last one gets no ,;
+						let arrayOfTagIds = PutCommonTagAtFront(fourTagIds[matchIndex], singleData.tag_ids).map((val:number) => val+"");// gotta be strings so it doesn'tget a "val.0" during json stringify
+						let tagIdArrayString:string = JSON.stringify(arrayOfTagIds);
+						let insertionValueArray: any[] = [];
 						insertionValueArray.push(indexOutOf16)
 						insertionValueArray.push(todaysDateString)
-						insertionValueArray.push(singleData.id)
+						insertionValueArray.push(singleData.id + "")
 						insertionValueArray.push(matchIndex)
 						insertionValueArray.push(tagIdArrayString)
 						insertionValueArray.push(singleData.thumbnail)
 						insertionValueArray.push(singleData.english_title)
-					}
-				}
 
-				console.log(insertString);
-				await deletionPromise;
-				await env.daily_ids.prepare(insertString).bind(...insertionValueArray).run();
+						return env.daily_ids.prepare(insertString).bind(...insertionValueArray).run();
+					})
+				)
 			}
 			else if(tagResponse.status == 429)
 			{
@@ -194,7 +222,7 @@ export default {
 		}
 
 		console.log("cron processed");
-		let testSecretValue:string = await env.TestSecret.get();
-		console.log("testing a fake secret access:", testSecretValue);
+		// let testSecretValue:string = await env.TestSecret.get();
+		// console.log("testing a fake secret access:", testSecretValue);
 	},
 };
