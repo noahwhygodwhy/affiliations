@@ -45,6 +45,12 @@ function PutCommonTagAtFront(commonTag:number, arrayIn : number[]) : number[]
 	return [commonTag, ...arrayIn];
 }
 
+function FetchTodaysIds(env:Env) : Response
+{
+
+
+}
+
 export default {
 
 	async fetch(
@@ -52,18 +58,23 @@ export default {
 		env: Env,
 		ctx: ExecutionContext) {
 		const url = new URL(request.url);
-		if (url.pathname === "/testschedule") {
-		// Build a mock ScheduledController matching what the cron runtime provides
-		const controller :ScheduledController= {
-			cron: "59 23 LW * *",
-			scheduledTime: Date.now(),
-			noRetry: ()=>{return true;}
-		};
-		let statusString = await this.scheduled(controller, env, ctx);
-		return new Response("Scheduled handler triggered successfully\n" +statusString, {
-			status: 200,
-			headers: { "Content-Type": "text/plain" },
-		});
+		if (url.pathname === "/testschedule")
+		{
+			// Build a mock ScheduledController matching what the cron runtime provides
+			const controller :ScheduledController= {
+				cron: "59 23 LW * *",
+				scheduledTime: Date.now(),
+				noRetry: ()=>{return true;}
+			};
+			let statusString = await this.scheduled(controller, env, ctx);
+			return new Response("Scheduled handler triggered successfully\n" +statusString, {
+				status: 200,
+				headers: { "Content-Type": "text/plain" },
+			});
+		}
+		if(url.pathname === "/fetchtodaysids")
+		{
+			return FetchTodaysIds(env);
 		}
 		return new Response("Not found", { status: 404 });
 	},

@@ -42,3 +42,9 @@ export interface SearchResult
     "total": number;
 }
 
+
+// this is my own schema, not nh, but i need a common file
+export interface DatabaseEntry
+{
+
+}
