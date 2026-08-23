@@ -130,7 +130,7 @@ export class App implements OnInit, AfterViewInit{
         // speicifically not calling shuffleEntries as that has animation tthing
 
         console.log("doing the load");
-        this.dataEntries = await LoadTodaysEntry();
+        // this.dataEntries = await LoadTodaysEntry();
         this.ready = true;
         console.log("ready:", this.ready);
     }
