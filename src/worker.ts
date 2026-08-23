@@ -181,7 +181,7 @@ export default {
 
 				console.log(insertString);
 				await deletionPromise;
-				await env.daily_ids.prepare(insertString).bind(insertionValueArray).run();
+				await env.daily_ids.prepare(insertString).bind(...insertionValueArray).run();
 			}
 			else if(tagResponse.status == 429)
 			{
