@@ -52,7 +52,7 @@ export default {
 					],
 			}
 			let tagRequest : Request = new Request("https://nhentai.net/api/v2/tags/tag?sort=popular&page=1&per_page=25", requestInitInfo);
-			let tagResponse:Response = await this.fetch(tagRequest, env, ctx)
+			let tagResponse:Response = await fetch(tagRequest)
 			if(doReturn)
 			{
 				return "" +
