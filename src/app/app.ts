@@ -123,14 +123,15 @@ export class App implements OnInit, AfterViewInit{
     }
 
     dateString:string = "";
-    ngOnInit()
+    async ngOnInit()
     {
         console.log("ngoninit");
         this.dateString = Temporal.Now.plainDateISO().toString();
         // speicifically not calling shuffleEntries as that has animation tthing
 
         console.log("doing the load");
-        LoadTodaysEntry().then((data)=>this.dataEntries = data).then(()=>{console.log("setting ready to true"); this.ready=true;});
+        this.dataEntries = await LoadTodaysEntry();
+        this.ready = true;
         console.log("started the load");
     }
 
