@@ -47,7 +47,7 @@ function shuffle(array : DataEntry[], minimumIndexToTouch:number) : DataEntry[]
 
 async function LoadTodaysEntry()
 {
-
+    console.log("top of LoadTodaysEntry");
     let resp = fetch(
         "https://affiliations.noah.exposed/fetchtodaysids",
         {
@@ -60,7 +60,9 @@ async function LoadTodaysEntry()
     ).then((val)=>val.json());
 
 
+    console.log("started fetch");
     let data: DatabaseRow[] = (await resp) as DatabaseRow[];
+    console.log("awaited on fetch");
 
     let fetchedDataEntries: DataEntry[] = data.map((d:DatabaseRow):DataEntry => {
         return {
@@ -74,6 +76,7 @@ async function LoadTodaysEntry()
             oldY:0
         }
     });
+    console.log("prepared data entries");
     return fetchedDataEntries;
 
     // fetch against https://affiliations.noah.exposed/
@@ -121,10 +124,13 @@ export class App implements OnInit, AfterViewInit{
     dateString:string = "";
     ngOnInit()
     {
+        console.log("ngoninit");
         this.dateString = Temporal.Now.plainDateISO().toString();
         // speicifically not calling shuffleEntries as that has animation tthing
 
+        console.log("doing the load");
         LoadTodaysEntry().then((data)=>this.dataEntries = data).then(()=>{this.ready=true});
+        console.log("started the load");
     }
 
     ngAfterViewInit()

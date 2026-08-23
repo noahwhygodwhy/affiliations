@@ -21,7 +21,8 @@
 
 
 
-
+@if(ready)
+{
 <div id="appMainDiv" class="flex-column d-flex h-100" style="padding:0px">
     <div class="row">
         <h1 class="title">AFILLIATIONS</h1>
@@ -92,4 +93,9 @@
         }
     }
 </div>
+}
+@else
+{
+    loading screen
+}
 <router-outlet />
