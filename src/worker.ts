@@ -42,24 +42,22 @@ export default {
 		ctx: ExecutionContext
 	) : Promise<string | void>{
 		{ // section for the first tag request
-			let requestInitInfo : RequestInit = {
-				method:"GET",
-				headers:[
-					["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"],
-					// ["Content-Type", "application/json"],
-					["Accept", "application/json"],
-					["Authorization", "anon"], // idk which it wants
-					// ["auth", "anon"]
-					],
-			}
-			let tagRequest : Request = new Request("https://nhentai.net/api/v2/tags/tag?sort=popular&page=1&per_page=25", requestInitInfo);
-			let tagResponse:Response = await fetch(tagRequest)
+			let tagResponse = await fetch(
+				"https://nhentai.net/api/v2/tags/tag?sort=popular&page=1&per_page=25",
+				{
+					method:"GET",
+					headers:[
+						["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"],
+						["Accept", "application/json"],
+						["Authorization", "anon"],
+					]
+				}
+			)
 
 			if((tagResponse.status >= 200) && (tagResponse.status < 300))
 			{
-				env.daily_ids.prepare("")
 				let todaysDateString = Temporal.Now.plainDateISO().toString();
-				env.daily_ids.prepare("DELETE * FROM daily_ids WHERE dateUsed = " + todaysDateString)
+				env.daily_ids.prepare("DELETE * FROM daily_ids WHERE dateUsed = " + todaysDateString).run()
 
 				let data = await tagResponse.json() as TagResult;
 
@@ -68,8 +66,6 @@ export default {
 				{
 					let singleData:SingleTagResult = data.result[i];
 
-					let id :string = singleData.id + "";
-					let matchIndex :number = i/4;
 					insertString += " ("
 					insertString += i + ", "
 					insertString += todaysDateString + ", "
