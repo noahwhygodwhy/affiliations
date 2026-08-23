@@ -77,6 +77,7 @@ async function LoadTodaysEntry()
         }
     });
     console.log("prepared data entries");
+    console.log(fetchedDataEntries);
     return fetchedDataEntries;
 
     // fetch against https://affiliations.noah.exposed/
@@ -129,26 +130,29 @@ export class App implements OnInit, AfterViewInit{
         // speicifically not calling shuffleEntries as that has animation tthing
 
         console.log("doing the load");
-        LoadTodaysEntry().then((data)=>this.dataEntries = data).then(()=>{this.ready=true});
+        LoadTodaysEntry().then((data)=>this.dataEntries = data).then(()=>{console.log("setting ready to true"); this.ready=true;});
         console.log("started the load");
     }
 
     ngAfterViewInit()
     {
-        console.log("ngAfterViewInit");
-        for(let i = 0; i < 16; i++)
-            {
-            let boxI:Element|null = document.getElementById("square"+i);
-            if(boxI != null)
+        if(this.ready)
+        {
+            console.log("ngAfterViewInit");
+            for(let i = 0; i < 16; i++)
                 {
-                let d : DOMRect = boxI.getBoundingClientRect();
-                this.dataEntries[i].oldX = d.left;
-                this.dataEntries[i].oldY = d.top;
-                // console.log(i, d.top, d.left);
-            }
-            else
-                {
-                console.error("square"+i, "is null")
+                let boxI:Element|null = document.getElementById("square"+i);
+                if(boxI != null)
+                    {
+                    let d : DOMRect = boxI.getBoundingClientRect();
+                    this.dataEntries[i].oldX = d.left;
+                    this.dataEntries[i].oldY = d.top;
+                    // console.log(i, d.top, d.left);
+                }
+                else
+                    {
+                    console.error("square"+i, "is null")
+                }
             }
         }
     }
