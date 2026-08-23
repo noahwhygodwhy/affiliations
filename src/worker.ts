@@ -46,7 +46,7 @@ export default {
 			}
 			let tagRequest : Request = new Request("https://nhentai.net/api/v2/tags/tag?sort=popular&page=1&per_page=25", requestInitInfo);
 			let tagResponse:Response = await this.fetch(tagRequest, env, ctx)
-			console.log("tagrepsonse.status", (await tagResponse.json()) as string)
+			console.log("tagrepsonse.status", await tagResponse.text())
 			// if((tagResponse.status >= 200) && (tagResponse.status < 300))
 			// {
 			// 	let data = await tagResponse.json() as SearchResult;
