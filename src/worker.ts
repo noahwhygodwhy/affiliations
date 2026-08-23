@@ -56,9 +56,11 @@ export default {
 
 			if((tagResponse.status >= 200) && (tagResponse.status < 300))
 			{
-				let todaysDateString = "T" + Temporal.Now.plainDateISO().toString();
+				let todaysDateString = Temporal.Now.plainDateISO().toString();
 				console.log("date string:", todaysDateString);
-				await env.daily_ids.prepare("DELETE FROM daily_ids WHERE dateUsed = "+ todaysDateString).run();
+				let deleteString = "DELETE FROM daily_ids WHERE dateUsed = '"+ todaysDateString + "'";
+				console.log("deleteString:", deleteString);
+				await env.daily_ids.prepare(deleteString).run();
 
 				let data = await tagResponse.json() as TagResult;
 
@@ -67,10 +69,11 @@ export default {
 				{
 					let singleData:SingleTagResult = data.result[i];
 
+					// the below has very very very sensitive single quotes, be careful
 					insertString += " (";
 					insertString += (i + ", ");
-					insertString += (todaysDateString + ", ");
-					insertString += (singleData.id + ", ");
+					insertString += "'" + (todaysDateString + "', ");
+					insertString += "'" + (singleData.id + "', ");
 					insertString += (Math.floor(i/4) + (i < 15 ? "), " : ")"));
 				}
 				console.log(insertString);
