@@ -1,3 +1,15 @@
+import { HttpClient } from "@angular/common/http";
+
+import { SearchResult } from "./nhSchema"
+
+
+interface DatabaseRow
+{
+	indexInDay:number;
+	dateUsed:string;
+	sixDigis:string;
+	matchIndex:number;
+}
 
 export default {
 
@@ -27,6 +39,31 @@ export default {
 		env: Env,
 		ctx: ExecutionContext,
 	) {
+
+		{ // section for the first tag request
+			let requestInitInfo : RequestInit = {
+			method:"GET",
+			headers:[["User-Agent", "Afilliations/1.0.0 (+https://affiliations.noah.exposed) (noahwhygodwhy@pm.me)"]],
+			}
+			let tagRequest : Request = new Request("www.nhentai.net/api/v2/tags/tag?sort=popular", requestInitInfo);
+			let tagResponse:Response = await this.fetch(tagRequest, env, ctx)
+			if((tagResponse.status >= 200) && (tagResponse.status < 300))
+			{
+				let data = await tagResponse.json() as SearchResult;
+				console.log(data);
+			}
+			else if(tagResponse.status == 429)
+			{
+				console.error("429 received")
+			}
+			else
+			{
+				console.error("Bad Response from ")
+			}
+
+		}
+
+
 		console.log("cron processed");
 		let testSecretValue:string = await env.TestSecret.get();
 		console.log("testing a fake secret access:", testSecretValue);

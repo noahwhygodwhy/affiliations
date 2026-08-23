@@ -12,6 +12,13 @@
         "secret_name": "TestSecret"
         }
     ],
+    "d1_databases": [
+        {
+        "binding": "daily_ids", // available in your Worker on env.DB
+        "database_name": "daily_ids",
+        "database_id": "66c8b59e-7431-42a9-abc8-529739d600cd"
+        }
+    ],
     "triggers":
     {
         "crons": ["59 23 LW * *"]
