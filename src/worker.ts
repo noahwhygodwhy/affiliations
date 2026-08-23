@@ -57,8 +57,8 @@ export default {
 			if((tagResponse.status >= 200) && (tagResponse.status < 300))
 			{
 				let todaysDateString = Temporal.Now.plainDateISO().toString();
-				console.log(todaysDateString);
-				await env.daily_ids.prepare("DELETE FROM daily_ids WHERE dateUsed = ?").bind(todaysDateString).run();
+				console.log("date string:", todaysDateString);
+				await env.daily_ids.prepare("DELETE FROM daily_ids WHERE dateUsed = "+todaysDateString).run();
 
 				let data = await tagResponse.json() as TagResult;
 
@@ -71,7 +71,7 @@ export default {
 					insertString += i + ", "
 					insertString += todaysDateString + ", "
 					insertString += singleData.id + ", "
-					insertString += i/4 + (i < 15 ? "), " : ")")
+					insertString += Math.floor(i/4) + (i < 15 ? "), " : ")")
 				}
 				console.log(insertString);
 				await env.daily_ids.prepare(insertString).run();
