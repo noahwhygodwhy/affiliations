@@ -132,7 +132,7 @@ export class App implements OnInit, AfterViewInit{
         console.log("doing the load");
         this.dataEntries = await LoadTodaysEntry();
         this.ready = true;
-        console.log("started the load");
+        console.log("ready:", this.ready);
     }
 
     ngAfterViewInit()
