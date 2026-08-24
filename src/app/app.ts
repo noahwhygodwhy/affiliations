@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, AfterViewInit, afterNextRender, OnChanges, DoCheck} from '@angular/core';
+import { Component, signal, OnInit, AfterViewInit, afterNextRender, OnChanges, DoCheck, ChangeDetectorRef} from '@angular/core';
 import { Data, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -11,7 +11,7 @@ export interface MatchEntry
     name : string;
     description : string;
     color : string; // todo: is this right?
-}
+}ChangeDetectorRef
 export interface DataEntry
 {
     title : string;
@@ -79,11 +79,6 @@ async function LoadTodaysEntry()
     console.log("prepared data entries");
     console.log(fetchedDataEntries);
     return fetchedDataEntries;
-
-    // fetch against https://affiliations.noah.exposed/
-    // await the result and parse it into an array of DataEntries (might need to modify the type)
-    // shuffle
-    // return
 }
 
 
@@ -110,7 +105,7 @@ export class App implements OnInit, AfterViewInit{
     ready = false;
     won = false;
     justTriedBadMatch = false;
-    constructor()
+    constructor(private ref: ChangeDetectorRef)
     {
     }
 
@@ -127,11 +122,8 @@ export class App implements OnInit, AfterViewInit{
     {
         console.log("ngoninit");
         this.dateString = Temporal.Now.plainDateISO().toString();
-        // speicifically not calling shuffleEntries as that has animation tthing
-
         console.log("doing the load");
-        LoadTodaysEntry().then((data)=> {this.dataEntries = data; this.ready = true; console.log("ready:", this.ready);});
-        // this.ready = true;
+        LoadTodaysEntry().then((data)=> {this.dataEntries = data; this.ready = true; console.log("ready:", this.ready); this.ref.markForCheck()});
         console.log("ready:", this.ready);
     }
 
