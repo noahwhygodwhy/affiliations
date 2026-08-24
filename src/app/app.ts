@@ -58,9 +58,11 @@ async function LoadTodaysEntry()
             ]
         }
     )
+    console.log(resp);
     console.log("did fetch");
     let data: DatabaseRow[] = await resp.json<DatabaseRow[]>();
     console.log("awaited on json");
+    console.log(data);
 
     let fetchedDataEntries: DataEntry[] = data.map((d:DatabaseRow):DataEntry => {
         return {
@@ -128,8 +130,8 @@ export class App implements OnInit, AfterViewInit{
         // speicifically not calling shuffleEntries as that has animation tthing
 
         console.log("doing the load");
-        this.dataEntries = await LoadTodaysEntry();
-        this.ready = true;
+        LoadTodaysEntry().then((data)=> {this.dataEntries = data; this.ready = true; console.log("ready:", this.ready);});
+        // this.ready = true;
         console.log("ready:", this.ready);
     }
 
