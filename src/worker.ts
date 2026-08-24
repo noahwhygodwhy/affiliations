@@ -9,13 +9,6 @@ function getRandomInt(max:number) :number {
   return Math.floor(Math.random() * max);
 }
 
-interface DatabaseRow
-{
-	indexInDay:number;
-	dateUsed:string;
-	sixDigis:string;
-	matchIndex:number;
-}
 
 function InGoodStatusRange(statusIn:number):boolean
 {
@@ -49,7 +42,7 @@ async function FetchTodaysIds(env:Env) : Promise<Response>
 {
 	console.log("top of FetchTodaysIds")
 	let dateString = Temporal.Now.plainDateISO().toString();
-	let resultOfDBQuery = await env.daily_ids.prepare("SELECT * FROM daily_ids WHERE dateUsed = ?").bind(dateString).run<DatabaseRow>();
+	let resultOfDBQuery = await env.daily_ids.prepare("SELECT * FROM daily_ids WHERE dateUsed = ?").bind(dateString).run();
 	assert(resultOfDBQuery.success == true, "db query failed for some reason?")
 	return new Response(JSON.stringify(resultOfDBQuery.results),
 	{

@@ -48,7 +48,7 @@ export interface DatabaseRow
 {
     indexInDay : number;
     dateUsed : string;
-    sixDigis:string;
+    sixDigits:string;
     matchIndex:number;
     tagIdList : string;
     thumnailUrlSuffix:string;

@@ -15,6 +15,7 @@ export interface MatchEntry
 export interface DataEntry
 {
     title : string;
+    sixDigits: string;
     tags :string[];
     image: string;
     matchGroupIndex : number;
@@ -67,6 +68,7 @@ async function LoadTodaysEntry()
     let fetchedDataEntries: DataEntry[] = data.map((d:DatabaseRow):DataEntry => {
         return {
             title: d.title,
+            sixDigits:d.sixDigits,
             tags: JSON.parse(d.tagIdList),
             image:"https://affiliations.noah.exposed/proxyCDN/" + d.thumnailUrlSuffix,
             matchGroupIndex:d.matchIndex,
