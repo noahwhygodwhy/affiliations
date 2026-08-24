@@ -48,7 +48,7 @@ function shuffle(array : DataEntry[], minimumIndexToTouch:number) : DataEntry[]
 async function LoadTodaysEntry()
 {
     console.log("top of LoadTodaysEntry");
-    let resp = fetch(
+    let resp = await fetch(
         "https://affiliations.noah.exposed/fetchtodaysids",
         {
             method:"GET",
@@ -57,12 +57,10 @@ async function LoadTodaysEntry()
                 ["Access-Control-Allow-Origin", "https://affiliations.noah.exposed"]
             ]
         }
-    ).then((val)=>val.json());
-
-
-    console.log("started fetch");
-    let data: DatabaseRow[] = (await resp) as DatabaseRow[];
-    console.log("awaited on fetch");
+    )
+    console.log("did fetch");
+    let data: DatabaseRow[] = await resp.json<DatabaseRow[]>();
+    console.log("awaited on json");
 
     let fetchedDataEntries: DataEntry[] = data.map((d:DatabaseRow):DataEntry => {
         return {
@@ -130,7 +128,7 @@ export class App implements OnInit, AfterViewInit{
         // speicifically not calling shuffleEntries as that has animation tthing
 
         console.log("doing the load");
-        // this.dataEntries = await LoadTodaysEntry();
+        this.dataEntries = await LoadTodaysEntry();
         this.ready = true;
         console.log("ready:", this.ready);
     }
