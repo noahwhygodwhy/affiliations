@@ -47,11 +47,14 @@ function PutCommonTagAtFront(commonTag:number, arrayIn : number[]) : number[]
 
 async function FetchTodaysIds(env:Env) : Promise<Response>
 {
-
+	console.log("top of FetchTodaysIds")
 	let dateString = Temporal.Now.plainDateISO().toString();
 	let resultOfDBQuery = await env.daily_ids.prepare("SELECT * FROM daily_ids WHERE dateUsed = ?").bind(dateString).run<DatabaseRow>();
-
 	assert(resultOfDBQuery.success == true, "db query failed for some reason?")
+	console.log(resultOfDBQuery);
+	console.log(resultOfDBQuery.results)
+	console.log(resultOfDBQuery.results[0])
+	console.log(JSON.stringify(resultOfDBQuery.results));
 	return new Response(JSON.stringify(resultOfDBQuery.results),
 	{
 		status: 200,
