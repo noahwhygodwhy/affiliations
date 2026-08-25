@@ -129,7 +129,8 @@ export class App implements OnInit, AfterViewInit{
         console.log("ngoninit");
         this.dateString = Temporal.Now.plainDateISO().toString();
         console.log("doing the load");
-        LoadTodaysEntry().then((data)=> {this.dataEntries = data; this.ready = true; console.log("ready:", this.ready); this.ref.markForCheck()});
+        LoadTodaysEntry().then((data)=> {this.dataEntries = data; this.ready = true; console.log("ready:", this.ready); this.ref.markForCheck(); this.overlayModalData = this.dataEntries[0]; this.ref.markForCheck(); });
+
         console.log("ready:", this.ready);
     }
 
