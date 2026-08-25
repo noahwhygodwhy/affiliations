@@ -39,7 +39,9 @@
                     @let dataEntry = dataEntries[dataIndex];
                     <div class="col p-0 pr-0" id="square{{dataIndex}}">
                         <button
+                            (press)="enableModal(dataEntry)"
                             (click)="trySelect(dataIndex)"
+                            (tap)="trySelect(dataIndex)"
                             [ngClass]="getx44ButtonClass(dataIndex)"
                             type="button"
                             class="btn
@@ -97,5 +99,10 @@
 @else
 {
     <p>loading screen, ready: {{ready ? true : false}}</p>
+}
+
+@if(overlayModalData != undefined)
+{
+    <app-thumbnailmodal [dataPoint]="overlayModalData"></app-thumbnailmodal>
 }
 <router-outlet />

@@ -1,9 +1,12 @@
-import { Component, signal, OnInit, AfterViewInit, afterNextRender, OnChanges, DoCheck, ChangeDetectorRef} from '@angular/core';
+import { Component, signal, OnInit, AfterViewInit, Output, ChangeDetectorRef} from '@angular/core';
 import { Data, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { Temporal } from '@js-temporal/polyfill';
 import { DatabaseRow } from '../nhSchema';
+
+import { Thumbnailmodal } from './thumbnailmodal/thumbnailmodal';
+
 
 export interface MatchEntry
 {
@@ -49,8 +52,7 @@ function shuffle(array : DataEntry[], minimumIndexToTouch:number) : DataEntry[]
 async function LoadTodaysEntry()
 {
     console.log("top of LoadTodaysEntry");
-    let resp = await fetch(
-        "https://affiliations.noah.exposed/fetchtodaysids",
+    let resp = await fetch("/fetchtodaysids",
         {
             method:"GET",
             headers:[
@@ -86,7 +88,7 @@ async function LoadTodaysEntry()
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, CommonModule],
+    imports: [RouterOutlet, CommonModule, Thumbnailmodal],
     templateUrl: './app.html',
     styleUrl: './app.css'
 })
@@ -94,6 +96,7 @@ export class App implements OnInit, AfterViewInit{
     protected readonly title = signal('affiliations');
 
 
+    @Output() overlayModalData:DataEntry|undefined = undefined;
     // affiliationEntries = [
     // ];
 
@@ -122,6 +125,7 @@ export class App implements OnInit, AfterViewInit{
     dateString:string = "";
     async ngOnInit()
     {
+        console.log("user agent?:", navigator.userAgent);
         console.log("ngoninit");
         this.dateString = Temporal.Now.plainDateISO().toString();
         console.log("doing the load");
@@ -434,6 +438,11 @@ export class App implements OnInit, AfterViewInit{
             {
             return "inactivex44Button";
         }
+    }
+
+    enableModal(dataPoint:DataEntry)
+    {
+        this.overlayModalData = dataPoint;
     }
 
 }

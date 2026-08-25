@@ -31,7 +31,10 @@ interface Pair
 
 function PutCommonTagAtFront(commonTag:number, arrayIn : number[]) : number[]
 {
+	// console.log("commonTag is", commonTag);
+	// console.log("array we're looking through is", arrayIn)
 	const currCommonTagIndex = arrayIn.indexOf(commonTag);
+	// console.log("currCommonTagIndex", currCommonTagIndex)
 	assert(currCommonTagIndex!= -1, "Common tag not present in list of tags?");
 	arrayIn.splice(currCommonTagIndex, 1);
 
@@ -71,6 +74,17 @@ export default {
 			return new Response("Scheduled handler triggered successfully\n" +statusString, {
 				status: 200,
 				headers: { "Content-Type": "text/plain" },
+			});
+		}
+		if (url.pathname === "/displayDatabaseEntries")
+		{
+			let vals = await env.daily_ids.prepare("SELECT * FROM daily_ids ORDER BY dateUsed DESC").run();
+
+			// Build a mock ScheduledController matching what the cron runtime provides
+
+			return new Response(JSON.stringify(vals.results), {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
 			});
 		}
 		if(url.pathname === "/fetchtodaysids")
@@ -154,6 +168,8 @@ export default {
 				// let searchResultPromises: Promise<SearchResult>[] = [];
 
 				// let readyToBeFormattedSearchString:string = 'https://nhentai.net/api/v2/search?query=tag:"${0}" -tag:"{1]}" -tag:"{2}" -tag:"{3}" &sort=popular-month&page=1';
+
+				console.log("fourTagIds:", fourTagIds);
 
 				let searchStrings:string[] = [
 					`https://nhentai.net/api/v2/search?query=tag:"${fourTagNames[0]}" -tag:"${fourTagNames[1]}" -tag:"${fourTagNames[2]}" -tag:"${fourTagNames[3]}" &sort=popular-month&page=1`,
