@@ -1,0 +1,159 @@
+
+ ⛅️ wrangler 4.127.0
+────────────────────
+Your Worker has access to the following bindings:
+Binding                                                           Resource                  Mode
+env.daily_ids (daily_ids)                                         D1 Database               local
+env.TestSecret (867282d07e2644be82888434e4cf30dc/TestSecret)      Secrets Store Secret      local
+
+⎔ Starting local server...
+[wrangler:info] Ready on http://localhost:8787
+date string: 2026-08-27
+deleteString: DELETE FROM daily_ids WHERE dateUsed = '2026-08-27'
+fourTagNames: [ 'sole male', 'incest', 'masturbation', 'full censorship' ]
+fourTagIds: [ 35763, 22942, 9162, 8368 ]
+search strings:
+https://nhentai.net/api/v2/search?query=tag:"sole male" -tag:"incest" -tag:"masturbation" -tag:"full censorship" &sort=popular-month&page=1
+https://nhentai.net/api/v2/search?query=tag:"incest" -tag:"sole male" -tag:"masturbation" -tag:"full censorship" &sort=popular-month&page=1
+https://nhentai.net/api/v2/search?query=tag:"masturbation" -tag:"sole male" -tag:"incest" -tag:"full censorship" &sort=popular-month&page=1
+https://nhentai.net/api/v2/search?query=tag:"full censorship" -tag:"sole male" -tag:"incest" -tag:"masturbation" &sort=popular-month&page=1
+conducting fetch
+searchResults.length (like, 4 search strings worth) 4
+search string reuslt 0has reuslts count: 25
+search string reuslt 1has reuslts count: 25
+search string reuslt 2has reuslts count: 25
+search string reuslt 3has reuslts count: 25
+arrayIn: [
+    1033,   2937,   7142,
+   12227,  13720,  15408,
+   17249,  20035,  21572,
+   24450,  24708,  33172,
+   35763,  90671, 138277,
+  150022, 150023
+]
+common tag: 35763
+arrayIn: [
+    683,  2937,   8378,  8653,
+   9083, 10314,  12227, 13720,
+  17249, 21572,  25050, 28550,
+  31044, 33172,  35763, 69809,
+  69810, 90671, 138277
+]
+common tag: 35763
+arrayIn: [
+    2937,   5962,  12227,
+   12824,  13720,  14072,
+   17249,  21572,  27473,
+   32484,  33172,  35762,
+   35763,  85295,  90671,
+  137708, 137709, 138277,
+  163082
+]
+common tag: 35763
+arrayIn: [
+     683,   1207,   2937,   9083,
+    9260,  12227,  13720,  15853,
+   17249,  17773,  19899,  21572,
+   22942,  29859,  33172,  35762,
+   90671,  97795, 134035, 136931,
+  138277, 156157
+]
+common tag: 22942
+arrayIn: [
+   12227,  15408,  15492,
+   15658,  17249,  19440,
+   22942,  28031,  33172,
+   70132,  90671, 128750,
+  138277, 140924, 147576
+]
+common tag: 22942
+arrayIn: [
+   1067,  1207,  1643,  2515,
+   2937,  3430,  8739,  9083,
+   9260, 12227, 13720, 15853,
+  16828, 17249, 22942, 23035,
+  23237, 25822, 28031, 28426,
+  29224, 29859, 30555, 33173,
+  97795
+]
+common tag: 22942
+arrayIn: [
+     683,   2937,   5820,   5962,   6343,
+    8010,   8400,  10476,  12227,  13720,
+   14069,  14283,  14971,  15853,  17249,
+   18328,  18567,  22942,  22945,  24102,
+   24201,  25766,  27553,  29859,  31044,
+   32996,  33129,  33172,  55588,  90671,
+  118056, 130025, 138277, 139146, 143116,
+  148498, 159212
+]
+common tag: 22942
+arrayIn: [
+   2937,  9162,   9462,  12227,
+  13720, 15492,  16228,  17249,
+  17531, 18328,  25457,  26821,
+  27384, 29859,  30035,  33172,
+  35762, 90671, 138277, 141400
+]
+common tag: 9162
+arrayIn: [
+   1033,   5357,   7752,   8391,
+   9162,  10314,  12227,  19440,
+  19899,  20282,  21572,  24201,
+  25601,  29023,  33172,  88433,
+  90671, 118056, 157128, 157404
+]
+common tag: 9162
+arrayIn: [
+     779,  1207,   1590,   1643,
+    2937,  8653,   9162,   9260,
+   10314, 12227,  12824,  13720,
+   13722, 13989,  14072,  15853,
+   16828, 17249,  19561,  20035,
+   29399, 30555,  33172,  35762,
+   81923, 90671, 148726, 149345,
+  162041
+]
+common tag: 9162
+arrayIn: [
+    1207,   2937,   2956,   3735,   3843,   6346,   7142,
+    7155,   7256,   7995,   8010,   8368,   8378,   8653,
+    9260,  10988,  13316,  13720,  13989,  14072,  14283,
+   14971,  15471,  15658,  15712,  15785,  16828,  19018,
+   19175,  20035,  20362,  20652,  21283,  22950,  23632,
+   24676,  25614,  26130,  26360,  27013,  27294,  28521,
+   29013,  29224,  29859,  30473,  30783,  31044,  31337,
+   32996,  33173,  36129,  73750,  75125,  81774,  84703,
+   85295,  93261,  93324, 103578, 107478, 111860, 124610,
+  130025, 133236, 141341, 148060, 149502, 149975, 157112,
+  158591, 162395, 166426, 166763, 166764
+]
+common tag: 8368
+arrayIn: [
+    1643,  2937,  8368,
+   13720, 13989, 14112,
+   17249, 20035, 27063,
+   29859, 29963, 33173,
+  138277
+]
+common tag: 8368
+arrayIn: [
+   1207,  2937,  6346,
+   8368,  8653,  9260,
+  20905, 21572, 29859,
+  33173, 50555
+]
+common tag: 8368
+arrayIn: [
+   1207,  2937,  8368,
+   9260, 17249, 19018,
+  25050, 25146, 29963,
+  33172
+]
+common tag: 8368
+cron processed
+[wrangler:info] GET /testschedule 200 OK (4148ms)
+⎔ Reloading local server...
+⎔ Local server updated and ready
+⎔ Reloading local server...
+⎔ Local server updated and ready

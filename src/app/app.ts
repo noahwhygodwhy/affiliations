@@ -1,8 +1,7 @@
-import { Component, signal, OnInit, AfterViewInit, Output, ChangeDetectorRef} from '@angular/core';
+import { Component, signal, OnInit, AfterViewInit, Output, ChangeDetectorRef, afterNextRender} from '@angular/core';
 import { Data, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-import { Temporal } from '@js-temporal/polyfill';
 import { DatabaseRow } from '../nhSchema';
 
 import { Thumbnailmodal } from './thumbnailmodal/thumbnailmodal';
@@ -26,27 +25,8 @@ export interface DataEntry
     matched : boolean;
     oldX : number;
     oldY : number;
-}
-
-function shuffle(array : DataEntry[], minimumIndexToTouch:number) : DataEntry[]
-{
-    let currentIndex = array.length;
-
-    while (currentIndex != minimumIndexToTouch)
-        {
-        let lengthOfRange = currentIndex - minimumIndexToTouch;
-
-        let randomIndex = Math.floor(Math.random() * lengthOfRange) + minimumIndexToTouch;
-        currentIndex--;
-
-        let tempA = array[currentIndex];
-        let tempB = array[randomIndex];
-
-        // make it realize there's a change?
-        array[currentIndex] = {...tempB};
-        array[randomIndex] = {...tempA};
-    }
-    return array;
+    currentlyPressed:boolean;
+    oldIDForAnimation : number;
 }
 
 async function LoadTodaysEntry()
@@ -67,7 +47,7 @@ async function LoadTodaysEntry()
     console.log("awaited on json");
     console.log(data);
 
-    let fetchedDataEntries: DataEntry[] = data.map((d:DatabaseRow):DataEntry => {
+    let fetchedDataEntries: DataEntry[] = data.map((d:DatabaseRow, index:number):DataEntry => {
         return {
             title: d.title,
             sixDigits:d.sixDigits,
@@ -77,7 +57,9 @@ async function LoadTodaysEntry()
             selected:false,
             matched:false,
             oldX:0,
-            oldY:0
+            oldY:0,
+            currentlyPressed:false,
+            oldIDForAnimation:index
         }
     });
     console.log("prepared data entries");
@@ -97,10 +79,6 @@ export class App implements OnInit, AfterViewInit{
 
 
     @Output() overlayModalData:DataEntry|undefined = undefined;
-    // affiliationEntries = [
-    // ];
-
-    // selectedEntries : DataEntry[] = [];
 
     dataEntries : DataEntry[] = []
 
@@ -114,10 +92,32 @@ export class App implements OnInit, AfterViewInit{
     {
     }
 
+
+    shuffle()
+    {
+        let minimumIndexToTouch = this.numMatchesMade*4;
+        let currentIndex = this.dataEntries.length;
+
+        while (currentIndex != minimumIndexToTouch)
+            {
+            let lengthOfRange = currentIndex - minimumIndexToTouch;
+
+            let randomIndex = Math.floor(Math.random() * lengthOfRange) + minimumIndexToTouch;
+            currentIndex--;
+
+            let tempA = this.dataEntries[currentIndex];
+            let tempB = this.dataEntries[randomIndex];
+
+            this.dataEntries[currentIndex] = {...tempB};
+            this.dataEntries[randomIndex] = {...tempA};
+        }
+    }
+
     shuffleEntries()
     {
-        // console.log("shuffling");
-        this.dataEntries = shuffle(this.dataEntries, this.numMatchesMade*4);
+        console.log("shuffling");
+        this.shuffle();
+        this.recordPositions()
         this.tentativeAnimationThing();
 
     }
@@ -125,42 +125,55 @@ export class App implements OnInit, AfterViewInit{
     dateString:string = "";
     async ngOnInit()
     {
+        this.overlayModalData = undefined;
         console.log("user agent?:", navigator.userAgent);
         console.log("ngoninit");
-        this.dateString = Temporal.Now.plainDateISO().toString();
+        this.dateString = new Date().toISOString().split("T")[0]
         console.log("doing the load");
-        LoadTodaysEntry().then((data)=> {this.dataEntries = data; this.ready = true; console.log("ready:", this.ready); this.ref.markForCheck(); this.overlayModalData = this.dataEntries[0]; this.ref.markForCheck(); });
+        LoadTodaysEntry().then((data)=> {
+            this.dataEntries = data;
+            this.ready = true;
+            console.log("ready:", this.ready);
+            this.shuffle();
+            // this.tentativeAnimationThing();
+            // this.ref.markForCheck();
+            this.ref.detectChanges();
+
+            this.recordInitialPositions(); });
 
         console.log("ready:", this.ready);
     }
 
     ngAfterViewInit()
     {
-        if(this.ready)
-        {
-            console.log("ngAfterViewInit");
-            for(let i = 0; i < 16; i++)
-                {
-                let boxI:Element|null = document.getElementById("square"+i);
-                if(boxI != null)
-                    {
-                    let d : DOMRect = boxI.getBoundingClientRect();
-                    this.dataEntries[i].oldX = d.left;
-                    this.dataEntries[i].oldY = d.top;
-                    // console.log(i, d.top, d.left);
-                }
-                else
-                    {
-                    console.error("square"+i, "is null")
-                }
-            }
-        }
+        console.log("ngafterviewinit")
     }
 
-    tentativeAnimationThing()
+    recordInitialPositions()
     {
-        for(let i = 0; i < 16; i++)
+        console.log("record initial positions");
+        for(let i = 0; i < this.dataEntries.length; i++)
             {
+            let boxI:HTMLElement|null = document.getElementById("square"+i);
+            if(boxI != null)
+                {
+                let d : DOMRect = boxI.getBoundingClientRect();
+                this.dataEntries[i].oldX = d.left;
+                this.dataEntries[i].oldY = d.top;
+            }
+            else
+                {
+                console.error("square"+i, "is null")
+            }
+        };
+    }
+
+    recordPositions()
+    {
+        console.log("record positions");
+        for(let i = 0; i < this.dataEntries.length; i++)
+        {
+            this.dataEntries[i].oldIDForAnimation=i;
             let boxI:HTMLElement|null = document.getElementById("square"+i);
             if(boxI != null)
                 {
@@ -171,21 +184,28 @@ export class App implements OnInit, AfterViewInit{
 
                 boxI.style.transition = 'none';
                 boxI.style.transform = "translate(" + deltaX + "px, " + deltaY + "px)";
+
+                this.ref.detectChanges();
+                // void boxI.offsetWidth;
+
                 this.dataEntries[i].oldX = d.left;
                 this.dataEntries[i].oldY = d.top;
-
-                // console.log(i, d.top, d.left);
             }
             else
                 {
                 console.error("square"+i, "is null")
             }
         };
+    }
 
+    tentativeAnimationThing()
+    {
+        console.log("tentativeAnimationThing");
         requestAnimationFrame(() => {
             for(let i = 0; i < 16; i++)
-                {
-                let boxI:HTMLElement|null = document.getElementById("square"+i);
+            {
+                let oldId = this.dataEntries[i].oldIDForAnimation;
+                let boxI:HTMLElement|null = document.getElementById("square"+oldId);
                 if(boxI != null)
                     {
                     boxI.style.transition = 'transform 300ms ease';
@@ -193,14 +213,12 @@ export class App implements OnInit, AfterViewInit{
                 }
                 else
                     {
-                    console.error("square"+i, "is null")
+                    console.error("square"+oldId, "is null")
                 }
+                this.dataEntries[i].oldIDForAnimation = i;
             };
         });
-
     }
-
-
 
     ngOnChanges()
     {
@@ -261,9 +279,6 @@ export class App implements OnInit, AfterViewInit{
                 this.has4ButtonsSelected = true;
             }
         }
-        // settimeout();
-        // setTimeout()/
-        // this.tentativeAnimationThing();
     }
 
     deselectAll():void
@@ -277,6 +292,7 @@ export class App implements OnInit, AfterViewInit{
 
     trySubmit() : void
     {
+
         let currMatchPick:number = -1;
 
         for(let i = 0; i < this.dataEntries.length; i++)
@@ -319,54 +335,13 @@ export class App implements OnInit, AfterViewInit{
                     }
                 }
             }
-
-
-
-            // after determiend loss, if mistakes left is 0, set them all to match, where does mistakesLeft-- happen
-            // then in setup, access the sdata base for dataEntries instead
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            // setTimeout(()=>{
-            //   for(let i = 0; i < this.dataEntries.length; i++)
-            //   {
-            //     if(this.dataEntries[i].selected)
-            //     {
-            //       let boxI:HTMLElement|null = document.getElementById("square"+i);
-            //       if(boxI != null)
-            //       {
-            //         boxI.className = boxI.className.replace(" wigglyButtonCauseYoureDum","");
-            //       }
-            //       else
-                //       {
-            //         console.error("square"+i, "is null")
-            //       }
-            //     }
-            //   }
-            // }, 300);
-            // console.log("Bad Match");
             return;
         }
         // if we get here, then we know we have a mtach, and the match index is currMatchPick
 
-
-        let indexesOfJustMatchedEntries : number[] = [];
-
         this.dataEntries.forEach((data:DataEntry, index:number) => {
             if(data.matchGroupIndex == currMatchPick)
                 {
-                // indexesOfJustMatchedEntries.push(index);
                 data.matched = true;
                 data.selected = false;
             }
@@ -374,8 +349,7 @@ export class App implements OnInit, AfterViewInit{
 
         this.has4ButtonsSelected = false;
 
-
-
+        this.recordPositions()
 
         this.dataEntries.sort((dataA:DataEntry, dataB:DataEntry) => {
             // console.log("comparing", dataA, dataB);
@@ -397,17 +371,10 @@ export class App implements OnInit, AfterViewInit{
             return 0;
         });
 
+        this.ref.detectChanges();
+        // this.ref.detectChanges();
 
-        // let indexOfFirstUnmatched = this.numMatchesMade * 4;
-        // indexesOfJustMatchedEntries.forEach((indexOfJustMatched:number) =>
-        // {
-
-        // });
-
-
-
-
-        // this.bubbleSortUpMatched()
+        this.tentativeAnimationThing();
 
         // must increment after swaps
         this.numMatchesMade +=1;
@@ -418,34 +385,77 @@ export class App implements OnInit, AfterViewInit{
             this.won = true;
             console.log("win omg yoou did it wooooooooooo?");
         }
-
-        // if()
-
-        this.tentativeAnimationThing();
     }
 
     getx44ButtonClass(index:number):string
     {
+        let retVal = ""
 
         if(this.dataEntries[index].matched)
             {
-            return "matchedx44ButtonGroup" + this.dataEntries[index].matchGroupIndex;
-        }
-        if(this.dataEntries[index].selected)
-            {
-            return "selectedx44Button";
+            retVal += "matchedx44ButtonGroup" + this.dataEntries[index].matchGroupIndex;
         }
         else
+        {
+            if(this.dataEntries[index].selected)
             {
-            return "inactivex44Button";
+                retVal += "selectedx44Button";
+            }
+            else
+            {
+                retVal += "inactivex44Button";
+            }
+            if(this.dataEntries[index].currentlyPressed)
+            {
+                retVal += " pressedx44Button";
+            }
         }
+
+        return retVal;
     }
 
-    enableModal(dataPoint:DataEntry)
+    timeoutId:number = -1;
+
+    pointerDown(valueIndex:number)
     {
-        this.overlayModalData = dataPoint;
+        this.startModalCountdown(valueIndex);
+        this.dataEntries[valueIndex].currentlyPressed = true;
+        console.log("setting currentlyPressed on button ", valueIndex, "to true");
     }
 
+    pointerUp(valueIndex:number)
+    {
+        this.stopModalCountdown();
+        console.log("setting currentlyPressed on button ", valueIndex, "to false");
+        this.dataEntries[valueIndex].currentlyPressed = false;
+    }
+
+    startModalCountdown(valueIndex:number)
+    {
+        this.stopModalCountdown();
+        let milisecondsToWaitForModal:number = 500;
+        console.log("starting modal countdown")
+        this.timeoutId = setTimeout(()=>{console.log("setting modal data"); this.overlayModalData = this.dataEntries[valueIndex]; this.ref.detectChanges()}, milisecondsToWaitForModal);
+    }
+    stopModalCountdown()
+    {
+        console.log("ending modal countdown")
+        if(this.timeoutId === -1)
+        {
+
+            console.log("except it's -1")
+            return;
+        }
+        clearTimeout(this.timeoutId);
+        this.timeoutId = -1;
+
+    }
+
+    clearOutModalData(eventstuff:any)
+    {
+        this.dataEntries.forEach((x)=>{x.currentlyPressed = false});
+        this.overlayModalData = undefined;
+    }
 }
 
 

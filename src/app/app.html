@@ -21,34 +21,36 @@
 
 
 
+
+// TODO: the fact that you're tracking by colindex and rowindex is wrong, track by the 6digits and figure out a different way to interject divs
+
+
 @if(ready)
 {
 <div id="appMainDiv" class="flex-column d-flex h-100" style="padding:0px">
     <div class="row">
-        <h1 class="title">test</h1>
+        <h1 class="title">AFFILIATIONS</h1>
         <h3 class="subtitle">Group Doujins By Tag</h3>
     </div>
     <div class="row">
-        <div class="container " id="x44gridContainer" >
+        <div class="container" id="x44gridContainer" >
         @for(rowIndex of [0, 1, 2, 3]; track rowIndex)
         {
-            <div class="row m-0">
+            <div class="row m-0 flex-nowrap">
                 @for(colIndex of [0, 1, 2, 3]; track colIndex)
                 {
                     @let dataIndex = colIndex + (rowIndex*4);
                     @let dataEntry = dataEntries[dataIndex];
-                    <div class="col p-0 pr-0" id="square{{dataIndex}}">
-                        <button
-                            (press)="enableModal(dataEntry)"
+                    <div class="col-3 d-flex align-items-center genericx44Button squashRatio" id="square{{dataIndex}}"
+                            oncontextmenu="return false"
+                            (pointerdown) = "pointerDown(dataIndex);"
+                            (pointerup) = "pointerUp(dataIndex)"
+                            (pointercancel) = "pointerUp(dataIndex)"
                             (click)="trySelect(dataIndex)"
-                            (tap)="trySelect(dataIndex)"
-                            [ngClass]="getx44ButtonClass(dataIndex)"
-                            type="button"
-                            class="btn
-                            btn-outline-secondary
-                            entryButton">
+                            [ngClass]="getx44ButtonClass(dataIndex)">
+                            <p class="mb-0 x44buttonText">
                                 {{dataEntry.sixDigits + "|"+ dataEntry.matchGroupIndex}}
-                            </button>
+                            </p>
                     </div>
                 }
             </div>
@@ -101,9 +103,12 @@
     <p>loading screen, ready: {{ready ? true : false}}</p>
 }
 
-<!-- @if(overlayModalData != undefined) -->
-<!-- { -->
-<p>shoult be here:</p>
-<app-thumbnailmodal [dataPoint]="overlayModalData"></app-thumbnailmodal>
-<!-- } -->
+@if(overlayModalData !== undefined)
+{
+<!-- <p>shoult be here:</p> -->
+<app-thumbnailmodal
+    [dataPoint]="overlayModalData"
+    (onCloseModal)="clearOutModalData($event)">
+</app-thumbnailmodal>
+}
 <router-outlet />

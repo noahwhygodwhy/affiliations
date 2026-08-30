@@ -2,7 +2,6 @@ import { HttpClient } from "@angular/common/http";
 
 import { SearchResult, TagResult, SingleSearchResult, SingleTagResult } from "./nhSchema"
 
-import { Temporal } from '@js-temporal/polyfill';
 
 
 function getRandomInt(max:number) :number {
@@ -35,16 +34,25 @@ function PutCommonTagAtFront(commonTag:number, arrayIn : number[]) : number[]
 	// console.log("array we're looking through is", arrayIn)
 	const currCommonTagIndex = arrayIn.indexOf(commonTag);
 	// console.log("currCommonTagIndex", currCommonTagIndex)
-	assert(currCommonTagIndex!= -1, "Common tag not present in list of tags?");
-	arrayIn.splice(currCommonTagIndex, 1);
+	assert(!(currCommonTagIndex === -1), "Common tag not present in list of tags?");
+	if(currCommonTagIndex === -1)
+	{
+		console.log("arrayIn:", arrayIn);
+		console.log("common tag:", commonTag);
+	}
 
-	return [commonTag, ...arrayIn];
+	return [
+			commonTag,
+			...arrayIn.slice(0, currCommonTagIndex),
+			...arrayIn.slice(currCommonTagIndex + 1)
+		];
+
 }
 
 async function FetchTodaysIds(env:Env) : Promise<Response>
 {
 	console.log("top of FetchTodaysIds")
-	let dateString = Temporal.Now.plainDateISO().toString();
+	let dateString = new Date().toISOString().split("T")[0]
 	let resultOfDBQuery = await env.daily_ids.prepare("SELECT * FROM daily_ids WHERE dateUsed = ?").bind(dateString).run();
 	assert(resultOfDBQuery.success == true, "db query failed for some reason?")
 	return new Response(JSON.stringify(resultOfDBQuery.results),
@@ -126,7 +134,7 @@ export default {
 					]
 				}
 			)
-			let todaysDateString = Temporal.Now.plainDateISO().toString();
+			let todaysDateString = new Date().toISOString().split("T")[0]
 
 
 			if(InGoodStatusRange(tagResponse.status))
@@ -177,6 +185,9 @@ export default {
 					`https://nhentai.net/api/v2/search?query=tag:"${fourTagNames[2]}" -tag:"${fourTagNames[0]}" -tag:"${fourTagNames[1]}" -tag:"${fourTagNames[3]}" &sort=popular-month&page=1`,
 					`https://nhentai.net/api/v2/search?query=tag:"${fourTagNames[3]}" -tag:"${fourTagNames[0]}" -tag:"${fourTagNames[1]}" -tag:"${fourTagNames[2]}" &sort=popular-month&page=1`
 				];
+				console.log("search strings:");
+				searchStrings.forEach((d)=>console.log(d));
+
 
 				// let searchPromises:Promise<Response|void>[] = [];
 				let fetchInfo :RequestInit<RequestInitCfProperties> = {
@@ -196,14 +207,14 @@ export default {
 					fetch(searchStrings[3], fetchInfo).then(res => res.json<SearchResult>()),
 				]);
 
-				console.log("searchResults.length", searchResults.length);
+				console.log("searchResults.length (like, 4 search strings worth)", searchResults.length);
 				// 4x4 array of match sets
 				let chosenSearchResults:SingleSearchResult[][] = [];
 
 				searchResults.forEach((data:SearchResult, index:number) => {
 					let numResultsReturned = data.result.length;
 					let topNumResultsToPickFrom = Math.min(100, numResultsReturned);
-
+					console.log("search string reuslt " + index + "has reuslts count: " + topNumResultsToPickFrom);
 					let fourResultIndices :number[] = []; // these are indices in the returned array, not the IDs
 					chosenSearchResults.push([])
 					for(let i = 0; i < 4; i++)
