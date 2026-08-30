@@ -20,11 +20,6 @@
 </style>
 
 
-
-
-// TODO: the fact that you're tracking by colindex and rowindex is wrong, track by the 6digits and figure out a different way to interject divs
-
-
 @if(ready)
 {
 <div id="appMainDiv" class="flex-column d-flex h-100" style="padding:0px">
@@ -34,27 +29,29 @@
     </div>
     <div class="row">
         <div class="container" id="x44gridContainer" >
-        @for(rowIndex of [0, 1, 2, 3]; track rowIndex)
-        {
-            <div class="row m-0 flex-nowrap">
-                @for(colIndex of [0, 1, 2, 3]; track colIndex)
+
+            <div class="row m-0">
+            @for(dataIndex of dataIndices; track dataIndex; let elementIndex = $index)
+            {
+                <div class="col-3 d-flex align-items-center genericx44Button squashRatio" id="square{{elementIndex}}"
+                        oncontextmenu="return false"
+                        (pointerdown) = "pointerDown(elementIndex);"
+                        (pointerup) = "pointerUp(elementIndex)"
+                        (pointercancel) = "pointerUp(elementIndex)"
+                        (click)="trySelect(elementIndex)"
+                        [ngClass]="getx44ButtonClass(elementIndex)">
+                    <p class="mb-0 x44buttonText">
+                        {{dataIndex + "group(" + dataEntries[dataIndex].matchGroupIndex + ")"}}
+                        <!-- {{dataEntries[dataIndex].sixDigits + "|"+ dataEntries[dataIndex].matchGroupIndex + "|" + dataIndex}} -->
+                    </p>
+                </div>
+
+                @if((elementIndex % 4) == 3)
                 {
-                    @let dataIndex = colIndex + (rowIndex*4);
-                    @let dataEntry = dataEntries[dataIndex];
-                    <div class="col-3 d-flex align-items-center genericx44Button squashRatio" id="square{{dataIndex}}"
-                            oncontextmenu="return false"
-                            (pointerdown) = "pointerDown(dataIndex);"
-                            (pointerup) = "pointerUp(dataIndex)"
-                            (pointercancel) = "pointerUp(dataIndex)"
-                            (click)="trySelect(dataIndex)"
-                            [ngClass]="getx44ButtonClass(dataIndex)">
-                            <p class="mb-0 x44buttonText">
-                                {{dataEntry.sixDigits + "|"+ dataEntry.matchGroupIndex}}
-                            </p>
-                    </div>
+                    <div class="w-100"></div>
                 }
+            }
             </div>
-        }
         </div>
     </div>
     @if((numMatchesMade < 4) && (mistakesRemaining > 0))
