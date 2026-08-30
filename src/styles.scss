@@ -1,9 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+
 
 html, body {
+    /* background-color: hsl(0%, 0%, 5%); */
     margin: 0;
     height: 100%;
     overflow: hidden;
     color:whitesmoke;
     font-family: Noto Sans,sans-serif;
+    background-color: hsl(0, 0%, 5%) !important; // bootstrap go brr
 }

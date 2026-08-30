@@ -279,6 +279,55 @@ export class App implements OnInit, AfterViewInit{
         this.has4ButtonsSelected = false;
     }
 
+
+
+    sortUpMatched()
+    {
+        this.dataIndices.sort((dataIndexA:number, dataIndexB:number) => {
+            let dataA = this.dataEntries[dataIndexA];
+            let dataB = this.dataEntries[dataIndexB];
+            if(dataA.matched != dataB.matched)
+                {
+                return dataA.matched < dataB.matched ? 1 : -1;
+            }
+            if(dataA.matched && dataB.matched)
+                {
+                if(dataA.matchGroupIndex == dataB.matchGroupIndex)
+                    {
+                    return dataA.title < dataB.title ? 1 : -1;
+                }
+                else
+                    {
+                    return dataA.matchGroupIndex < dataB.matchGroupIndex ? 1 : -1;
+                }
+            }
+            return 0;
+        });
+    }
+
+    setUpYouLost()
+    {
+        this.won = false;
+        this.dataEntries.forEach((d)=>
+        {
+            d.selected = false;
+            d.currentlyPressed = false;
+            d.matched = true;
+        })
+
+        this.recordPositions()
+
+
+        this.sortUpMatched();
+
+        this.ref.detectChanges();
+        // this.ref.detectChanges();
+
+        this.tentativeAnimationThing();
+    }
+
+
+
     trySubmit() : void
     {
 
@@ -303,6 +352,11 @@ export class App implements OnInit, AfterViewInit{
                     }
                 }
             }
+        }
+        if(this.mistakesRemaining == 0)
+        {
+            this.setUpYouLost()
+            return;
         }
 
         if(currMatchPick == -1)
@@ -341,26 +395,8 @@ export class App implements OnInit, AfterViewInit{
 
         this.recordPositions()
 
-        this.dataIndices.sort((dataIndexA:number, dataIndexB:number) => {
-            let dataA = this.dataEntries[dataIndexA];
-            let dataB = this.dataEntries[dataIndexB];
-            if(dataA.matched != dataB.matched)
-                {
-                return dataA.matched < dataB.matched ? 1 : -1;
-            }
-            if(dataA.matched && dataB.matched)
-                {
-                if(dataA.matchGroupIndex == dataB.matchGroupIndex)
-                    {
-                    return dataA.title < dataB.title ? 1 : -1;
-                }
-                else
-                    {
-                    return dataA.matchGroupIndex < dataB.matchGroupIndex ? 1 : -1;
-                }
-            }
-            return 0;
-        });
+
+        this.sortUpMatched();
 
         this.ref.detectChanges();
         // this.ref.detectChanges();
